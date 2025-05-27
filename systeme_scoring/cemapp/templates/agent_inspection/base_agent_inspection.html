@@ -16,12 +16,13 @@
             <span class="sidebar-title">Agent d' Inspection</span>
         </div>
         <nav>
-            <a href="{% url 'agent_inspection_home' %}" class="nav-item"><i class="fa fa-home nav-icon"></i><span class="nav-text">Accueil</span></a>
             <div class="nav-group">
-                <a href="#" class="nav-item"><i class="fa fa-chart-bar nav-icon"></i><span class="nav-text">Rendez-Vous</span></a>
+                <a href="{% url 'agent_inspection_home' %}" class="nav-item"><i class="fa fa-home nav-icon"></i><span class="nav-text">Accueil</span></a>
+                <a href="{% url 'calendrierinspection' %}" class="nav-item"><i class="fa fa-chart-bar nav-icon"></i><span class="nav-text">Rendez-Vous</span></a>
+                <a href="{% url 'liste_proposition' %}" class="nav-item"><i class="fa fa-solid fa-calendar nav-icon"></i></i><span class="nav-text">Proposition report rendez vous</span></a>
+                <a href="{% url 'logout' %}" class="nav-item"><i class="fa fa-sign-out-alt nav-icon"></i><span class="nav-text">Déconnexion</span></a>
             </div>
 
-            <a href="{% url 'logout' %}" class="nav-item"><i class="fa fa-sign-out-alt nav-icon"></i><span class="nav-text">Déconnexion</span></a>
         </nav>
     </div>
 

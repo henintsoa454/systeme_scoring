@@ -1,0 +1,43 @@
+#calendar {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.fc-event {
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+.fc-event:hover {
+    opacity: 0.9;
+}
+
+
+/* Styles pour les modals (peuvent être partagés avec votre CSS existant) */
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 50%;
+    max-width: 600px;
+    border-radius: 8px;
+}

@@ -224,6 +224,9 @@ def nouvelle_demande(request):
         numero_credit = f"DC-{prefixe}-{today_str}-{DemandeCredit.objects.count() + 1}"
 
         # Création de la demande
+        statut_demande = "en_attente_validation"
+        if(sous_type_credit.type_credit.nom == 'Crédit aux Entrepreneurs'):
+            statut_demande = "en_attente_inspection"
         demande = DemandeCredit.objects.create(
             numero_credit=numero_credit,
             client=client,
@@ -232,8 +235,9 @@ def nouvelle_demande(request):
             montant_total=montant_total,
             montant_payer_mois=montant_mensuel,
             motif_credit=motif_credit,
-            statut_demande="en_attente_validation"
+            statut_demande = statut_demande
         )
+        
 
         messages.success(request, f"La demande {demande.numero_credit} a été créée avec succès.")
         return redirect('gestionnairedemandes')

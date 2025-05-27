@@ -1,7 +1,9 @@
 from django.utils import timezone
-from django.shortcuts import render, redirect
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from .models_classes.rendezvous_inspection import RendezvousInspection
+from datetime import datetime
 
 def user_login(request):
     if request.method == 'POST':
@@ -31,3 +33,20 @@ def user_login(request):
 def user_logout(request):
     logout(request)
     return redirect('login')
+
+def proposer_date(request, token):
+    rendezvous = get_object_or_404(RendezvousInspection, token=token)
+    
+    if request.method == 'POST':
+        try:
+            rendezvous.date_proposee = timezone.make_aware(
+                datetime.strptime(request.POST['date_proposee'], '%Y-%m-%dT%H:%M'))
+            rendezvous.raison_proposition = request.POST['raison_proposition']
+            rendezvous.statut_proposition = 'en_attente'
+            rendezvous.save()
+            return redirect('confirmation_proposition')
+            
+        except (ValueError, KeyError) as e:
+            messages.error(request, "Données invalides")
+    
+    return render(request, 'client/proposition_date_inspection.html', {'rendezvous': rendezvous})

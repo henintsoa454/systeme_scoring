@@ -8,5 +8,5 @@ from .document_credit import DocumentCredit
 from .sous_types_credit import SousTypeCredit
 from .agence import Agence
 from .rendezvous_finalisation import RendezvousFinalisation
-from .rendezvous_inspection import RendezvousInspection
 from .inspection_environnement import InspectionEnvironnement
+from .rendezvous_inspection import RendezvousInspection

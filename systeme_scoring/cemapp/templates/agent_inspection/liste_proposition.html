@@ -1,0 +1,79 @@
+{% extends base_template %}
+{% block content %}
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/liste_proposition.css' %}"> 
+
+<div class="content">
+    <div class="propositions-container">
+        <h2 style="color: var(--main-red); margin-bottom: 2rem;">Propositions de changement de date</h2>
+        
+        {% for proposition in propositions %}
+        <div class="proposition-card">
+            <div class="proposition-header">
+                <h3 style="margin: 0;">
+                    Demande #{{ proposition.demande.numero_credit }} - 
+                    {{ proposition.demande.client.nom_complet }}
+                </h3>
+                <span class="badge" style="background: var(--main-grey); color: white; padding: 0.3rem 0.6rem; border-radius: 20px;">
+                    En attente
+                </span>
+            </div>
+            
+            <div class="proposition-content">
+                <div class="proposition-details">
+                    <div>
+                        <h4 style="color: var(--main-red); margin-top: 0;">Date actuelle</h4>
+                        <p>{{ proposition.date_rendezvous|date:"d F Y à H:i" }}</p>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--main-red); margin-top: 0;">Date proposée</h4>
+                        <p>{{ proposition.date_proposee|date:"d F Y à H:i" }}</p>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 1.5rem;">
+                    <h4 style="color: var(--main-red);">Raison du changement</h4>
+                    <p>{{ proposition.raison_proposition }}</p>
+                </div>
+                
+                <form method="post" action="{% url 'traiter_proposition' token=proposition.token %}" class="proposition-actions">
+                    {% csrf_token %}
+                    <button type="button" 
+                            onclick="showMotifRefus(this)" 
+                            class="btn" 
+                            style="background: var(--main-grey); color: white;">
+                        Refuser
+                    </button>
+                    
+                    <div class="motif-refus-container">
+                        <textarea name="motif_refus" 
+                                  placeholder="Motif du refus..." 
+                                  required
+                                  style="width: 100%; padding: 0.8rem; border: 1px solid var(--main-light); margin-bottom: 1rem;"></textarea>
+                        <button type="submit" name="action" value="refuser" class="btn" style="background: #dc3545; color: white;">
+                            Confirmer le refus
+                        </button>
+                    </div>
+                    
+                    <button type="submit" name="action" value="accepter" class="btn" style="background: var(--main-red); color: white;">
+                        Accepter
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% empty %}
+        <div style="text-align: center; padding: 2rem; background: var(--main-light); border-radius: 5px;">
+            <p style="font-size: 1.2rem; color: var(--main-grey);">Aucune proposition en attente de traitement</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+function showMotifRefus(button) {
+    const container = button.closest('.proposition-actions').querySelector('.motif-refus-container');
+    container.style.display = container.style.display === 'block' ? 'none' : 'block';
+}
+</script>
+{% endblock %}

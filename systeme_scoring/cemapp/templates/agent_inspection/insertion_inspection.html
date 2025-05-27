@@ -1,0 +1,111 @@
+{% extends base_template %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Compléter le rapport d'inspection</h2>
+    <p class="lead">Rendez-vous du {{ rdv.date_rendezvous|date:"d/m/Y H:i" }} avec {{ rdv.demande.client.nom }}</p>
+    
+    <form method="post" class="mt-4">
+        {% csrf_token %}
+        
+        <div class="card mb-4">
+            <div class="card-header">Informations de l'entreprise</div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Nom de l'entreprise</label>
+                            <input type="text" class="form-control" name="nom_entreprise" 
+                                   value="{{ initial_data.nom_entreprise }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Statut juridique</label>
+                            <select class="form-select" name="statut_juridique" required>
+                                {% for value, label in statut_juridique_choices %}
+                                    <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Année de création</label>
+                            <input type="number" class="form-control" name="annee_creation" 
+                                   min="1900" max="{% now 'Y' %}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">État des locaux</label>
+                            <select class="form-select" name="etat_locaux" required>
+                                {% for value, label in etat_locaux_choices %}
+                                    <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Adresse complète</label>
+                    <textarea class="form-control" name="adresse" rows="2" required>{{ initial_data.adresse }}</textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Secteur d'activité</label>
+                    <input type="text" class="form-control" name="secteur_activite" 
+                           value="{{ initial_data.secteur_activite }}" required>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">Situation financière</div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label">Revenu moyen mensuel</label>
+                            <input type="number" step="0.01" class="form-control" 
+                                   name="revenu_moyen_mensuel" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label">Dépenses moyennes mensuelles</label>
+                            <input type="number" step="0.01" class="form-control" 
+                                   name="depenses_moyennes_mensuelles" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label">Rentabilité estimée</label>
+                            <input type="number" step="0.01" class="form-control" 
+                                   name="rentabilite_estimee" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ajoutez les autres sections du formulaire ici -->
+
+        <div class="text-end">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Enregistrer le rapport
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Calcul automatique de la rentabilité
+    document.querySelector('input[name="revenu_moyen_mensuel"]').addEventListener('input', updateRentabilite);
+    document.querySelector('input[name="depenses_moyennes_mensuelles"]').addEventListener('input', updateRentabilite);
+    
+    function updateRentabilite() {
+        const revenu = parseFloat(document.querySelector('input[name="revenu_moyen_mensuel"]').value) || 0;
+        const depenses = parseFloat(document.querySelector('input[name="depenses_moyennes_mensuelles"]').value) || 0;
+        document.querySelector('input[name="rentabilite_estimee"]').value = (revenu - depenses).toFixed(2);
+    }
+</script>
+{% endblock %}

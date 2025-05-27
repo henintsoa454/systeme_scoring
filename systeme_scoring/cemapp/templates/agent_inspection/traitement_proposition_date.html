@@ -1,0 +1,51 @@
+{% extends base_template %}
+{% block content %}
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/traitement_proposition_date.css' %}">
+
+<div class="container mt-4">
+    <h2>Traiter la proposition</h2>
+    
+    <div class="card my-3">
+        <div class="card-body">
+            <h5>Détails de la proposition</h5>
+            <p><strong>Client:</strong> {{ rendezvous.demande.client.nom }} {{ rendezvous.demande.client.prenomm }}</p>
+            <p><strong>Date actuelle:</strong> {{ rendezvous.date_rendezvous|date:"d F Y à H:i" }}</p>
+            <p><strong>Date proposée:</strong> {{ rendezvous.date_proposee|date:"d F Y à H:i" }}</p>
+            <p><strong>Raison:</strong> {{ rendezvous.raison_proposition }}</p>
+        </div>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="d-flex gap-3">
+            <button type="submit" name="action" value="refuser" 
+                    class="btn btn-danger flex-grow-1">
+                Refuser
+            </button>
+            <button type="submit" name="action" value="accepter" 
+                    class="btn btn-success flex-grow-1">
+                Accepter
+            </button>
+        </div>
+        
+        <div id="motifRefus" class="mt-3 collapse">
+            <label class="form-label">Motif du refus</label>
+            <textarea name="motif_refus" class="form-control" rows="3" required></textarea>
+            <button type="submit" name="action" value="refuser" 
+                    class="btn btn-danger mt-2">
+                Confirmer le refus
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+document.querySelector('[name="action"][value="refuser"]').addEventListener('click', function(e) {
+    e.preventDefault();
+    document.getElementById('motifRefus').classList.add('show');
+});
+</script>
+{% endblock %}

@@ -1,0 +1,242 @@
+.container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2.5rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+h2 {
+    color: var(--main-red);
+    font-weight: 700;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    padding-bottom: 0.75rem;
+}
+
+h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background: var(--main-red);
+    border-radius: 2px;
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 2rem;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.card-body {
+    padding: 2rem;
+    background: linear-gradient(135deg, #f9f9f9 0%, #ffffff 100%);
+}
+
+.card-title {
+    color: var(--main-red);
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.card-title::before {
+    content: '📅';
+    font-size: 1.2em;
+}
+
+.card-text {
+    color: #4a4a4a;
+    line-height: 1.6;
+    font-size: 1.05rem;
+}
+
+.card-text strong {
+    color: var(--main-grey);
+    font-weight: 600;
+    min-width: 120px;
+    display: inline-block;
+}
+
+form {
+    margin-top: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.75rem;
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--main-grey);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.05rem;
+}
+
+.form-control {
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    font-size: 1rem;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: none;
+}
+
+.form-control:focus {
+    border-color: var(--main-red);
+    box-shadow: 0 0 0 3px rgba(229, 0, 5, 0.15);
+    outline: none;
+}
+
+textarea.form-control {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.invalid-feedback {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    padding-left: 0.5rem;
+    color: #dc3545;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.invalid-feedback::before {
+    content: '⚠';
+}
+
+.btn-group {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 2.5rem;
+}
+
+.btn {
+    font-weight: 600;
+    padding: 0.875rem 1.75rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 2px solid transparent;
+}
+
+.btn-secondary {
+    background-color: var(--main-grey);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #7e8082;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(126, 128, 130, 0.2);
+}
+
+.btn-primary {
+    background-color: var(--main-red);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #c40004;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(229, 0, 5, 0.2);
+}
+
+
+/* Effets de validation avancés */
+
+.was-validated .form-control:valid {
+    border-color: #28a745;
+    padding-right: 2.5rem;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+}
+
+.was-validated .form-control:invalid {
+    border-color: #dc3545;
+    padding-right: 2.5rem;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+}
+
+
+/* Responsive */
+
+@media (max-width: 768px) {
+    .container {
+        padding: 1.75rem;
+        margin: 1.25rem;
+        border-radius: 0;
+    }
+    .btn-group {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    .btn {
+        width: 100%;
+    }
+    .card-text strong {
+        min-width: 100px;
+        margin-bottom: 0.25rem;
+        display: inline-block;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.btn-secondary:hover {
+    animation: pulse 1.5s infinite;
+}

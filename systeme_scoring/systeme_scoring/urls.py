@@ -7,6 +7,7 @@ urlpatterns = [
     path('superuser/', admin.site.urls),
     path('', baseviews.user_login, name='login'),
     path('logout/', baseviews.user_logout, name='logout'),
+    path('proposer-date/<uuid:token>/', baseviews.proposer_date, name='proposer_date'),
     #admin
     path('admin/', admin_views.admin_home, name='admin_home'),
     #directeur_agence
@@ -25,6 +26,12 @@ urlpatterns = [
     path("update-feature-importances", analyste_demande_views.update_feature_importances, name="update_feature_importances"),
     #agent_inspection
     path('agentinspection/', agent_inspection_views.agent_inspection_home, name='agent_inspection_home'),
+    path('agentinspection/calendrier_inspection', agent_inspection_views.calendrier_inspections, name='calendrierinspection'),
+    path('agentinspection/creer-rendezvous/', agent_inspection_views.creer_rendezvous, name='creer_rendezvous'),
+    path('agentinspection/creer-inspection/', agent_inspection_views.creer_inspection, name='creer_inspection'),
+    path('agentinspection/traiter-proposition/<uuid:token>/', agent_inspection_views.traiter_proposition, name='traiter_proposition'),    
+    path('agentinspection/liste-proposition/', agent_inspection_views.propositions_rendezvous, name='liste_proposition'),    
+    path('api/rendezvous/', agent_inspection_views.api_rendezvous, name='api_rendezvous'),
     #gestionnaire_demande
     path('gestionnairedemande/', gestionnaire_demande_views.gestionnaire_home, name='gestionnaire_home'),
     path('gestionnairedemande/gestionnaireclient/', gestionnaire_demande_views.gestionnaire_clients, name='gestionnaireclients'),

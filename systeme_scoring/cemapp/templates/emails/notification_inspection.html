@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Rendez-vous d'inspection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .content {
+            padding: 20px;
+        }
+        .footer {
+            margin-top: 20px;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #6c757d;
+            border-top: 1px solid #e9ecef;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 20px 0;
+            background-color: #007bff;
+            color: white !important;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .details {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Rendez-vous d'inspection planifié</h2>
+    </div>
+    
+    <div class="content">
+        <p>Bonjour {{ rendezvous.demande.client.nom }} {{ rendezvous.demande.client.prenom }},</p>
+        
+        <p>Un rendez-vous d'inspection a été planifié pour votre demande de crédit <strong>N°{{ rendezvous.demande.numero_credit }}</strong>.</p>
+        
+        <div class="details">
+            <h3>Détails du rendez-vous :</h3>
+            <p><strong>Date et heure :</strong> {{ rendezvous.date_rendezvous|date:"d F Y à H:i" }}</p>
+            <p><strong>Agent en charge :</strong> {{ rendezvous.agent_recouvrement.get_full_name }}</p>
+            <p><strong>Contact agent :</strong> {{ rendezvous.agent_recouvrement.telephone }}</p>
+        </div>
+        
+        <p>Vous pouvez modifier ce rendez-vous en cliquant sur le lien ci-dessous :</p>
+        
+        <a href="{{ modification_url }}" class="button">Modifier le rendez-vous</a>
+        
+        <p>Pour toute question, vous pouvez répondre directement à cet email ou contacter votre agent.</p>
+    </div>
+    
+    <div class="footer">
+        <p>Cet email vous a été envoyé automatiquement, merci de ne pas y répondre directement.</p>
+    </div>
+</body>
+</html>

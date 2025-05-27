@@ -54,6 +54,7 @@ class Client(models.Model):
     date_naissance = models.DateField()
     adresse = models.CharField(max_length=255)
     email = models.EmailField(blank=True, null=True)
+    numero_telephone = models.CharField(max_length=15,blank=True,null=True)
     n_cin = models.CharField(max_length=12)
     statut_familial = models.CharField(max_length=50, choices=STATUT_FAMILIAL_CHOICES)
     nbr_dependant = models.IntegerField(blank=True, null=True)

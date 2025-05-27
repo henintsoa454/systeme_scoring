@@ -1,0 +1,133 @@
+.rdv-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.rdv-header {
+    color: var(--main-red);
+    border-bottom: 2px solid var(--main-light);
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+}
+
+.rdv-card {
+    background: #f9f9f9;
+    border-left: 4px solid var(--main-red);
+    border-radius: 5px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.rdv-card-title {
+    color: var(--main-red);
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.rdv-form-label {
+    font-weight: 600;
+    color: var(--main-grey);
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.rdv-form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--main-light);
+    border-radius: 5px;
+    margin-bottom: 1.5rem;
+    transition: border 0.3s ease;
+}
+
+.rdv-form-control:focus {
+    border-color: var(--main-red);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(229, 0, 5, 0.1);
+}
+
+.rdv-btn-group {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 2rem;
+}
+
+.rdv-btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.rdv-btn-primary {
+    background-color: var(--main-red);
+    color: white;
+}
+
+.rdv-btn-primary:hover {
+    background-color: #c40004;
+    transform: translateY(-2px);
+}
+
+.rdv-btn-secondary {
+    background-color: var(--main-light);
+    color: var(--main-grey);
+}
+
+.rdv-btn-secondary:hover {
+    background-color: #d5d6d8;
+}
+
+.rdv-btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.rdv-btn-danger:hover {
+    background-color: #bb2d3b;
+}
+
+.rdv-alert {
+    padding: 1rem;
+    border-radius: 5px;
+    margin-bottom: 1.5rem;
+}
+
+.rdv-alert-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border-left: 4px solid #ffeeba;
+}
+
+
+/* Animation pour le motif de refus */
+
+.rdv-collapse {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+
+.rdv-collapse.show {
+    max-height: 200px;
+}
+
+
+/* Responsive */
+
+@media (max-width: 768px) {
+    .rdv-container {
+        padding: 1rem;
+        margin: 1rem;
+    }
+    .rdv-btn-group {
+        flex-direction: column;
+    }
+}
