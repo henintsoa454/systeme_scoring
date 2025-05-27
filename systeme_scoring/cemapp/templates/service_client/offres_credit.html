@@ -4,66 +4,112 @@
 {% block content %}
 
 <link rel="stylesheet" href="{% static 'css/info_offre.css' %}">
+<link rel="stylesheet" href="{% static 'fontawesome-5/css/all.css' %}">
+
 <div id="content">
+    <div class="page-header">
+        <h1><i class="fas fa-hand-holding-usd"></i> Nos Offres de Crédit</h1>
+        <p class="lead"><i class="fas fa-search-dollar"></i> Découvrez nos solutions de financement adaptées à vos besoins</p>
+    </div>
+    
     <div id="offre_credit">
         {% for type_credit in type_credits %}
         <div class="type-credit-section">
-            <h2>{{ type_credit.nom }}</h2>
-            <p>{{ type_credit.description }}</p>
-            {% for sous_type in type_credit.soustypecredit_set.all %}
-            <div class="offre">
-                <div class="card-header py-3">
-                    <h4 class="my-0 fw-normal">{{ sous_type.nom }}</h4>
-                </div>
-                <div class="card-body">
-                    <h1 class="card-title pricing-card-title">
-                        {{ sous_type.montant_min }} à {{ sous_type.montant_max }}<small class="text-muted fw-light"> MGA</small>
-                    </h1>
-                    <ul class="list-unstyled mt-3 mb-4">
-                        <li>Durée du prêt: entre {{ sous_type.duree_min }} et {{ sous_type.duree_max }} mois</li>
-                        <li>Taux mensuel: {{sous_type.taux_interet}} %</li>
-                        <li>{{ sous_type.description }}</li>
-                    </ul>
-                </div>
-                <a href="{% url 'simulation_offre' sous_type.id %}">
-                    <div class="overlay">
-                        Faire une simulation
-                    </div>
-                </a>
+            <div class="credit-type-header">
+                <h2><i class="fas fa-{{ type_credit.icon|default:'file-invoice-dollar' }}"></i> {{ type_credit.nom }}</h2>
+                <p class="type-description">{{ type_credit.description }}</p>
             </div>
-            {% endfor %}
+            
+            <div class="offres-container">
+                {% for sous_type in type_credit.soustypecredit_set.all %}
+                <div class="offre-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-{{ sous_type.icon|default:'tags' }}"></i> {{ sous_type.nom }}</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="montant-range">
+                            <span class="montant-icon"><i class="fas fa-money-bill-wave"></i></span>
+                            <div>
+                                <span class="montant-min">{{ sous_type.montant_min }}</span>
+                                <span class="montant-separator">à</span>
+                                <span class="montant-max">{{ sous_type.montant_max }}</span>
+                                <span class="montant-devise">MGA</span>
+                            </div>
+                        </div>
+                        
+                        <ul class="offre-features">
+                            <li>
+                                <i class="feature-icon fas fa-clock"></i>
+                                <span>Durée: {{ sous_type.duree_min }} - {{ sous_type.duree_max }} mois</span>
+                            </li>
+                            <li>
+                                <i class="feature-icon fas fa-percentage"></i>
+                                <span>Taux mensuel: {{sous_type.taux_interet}}%</span>
+                            </li>
+                            <li class="feature-description">
+                                <i class="feature-icon fas fa-info-circle"></i>
+                                <span>{{ sous_type.description }}</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <a href="{% url 'simulation_offre' sous_type.id %}" class="simulation-btn">
+                        <span>Faire une simulation</span>
+                        <i class="btn-icon fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
         </div>
         {% endfor %}
     </div>
 
-    <div id="document_credit">
-        <h3>Documents nécessaires</h3>
-        <table>
-            <tr>
-                <th>Nouveau Client</th>
-                <th>Ancien Client</th>
-            </tr>
-            <tr>
-                <td>
-                    <ul>
-                        {% for document in documents %}
-                            {% if document.client_status == 'Nouveau' %}
-                                <li>{{ document.nom }}</li>
-                            {% endif %}
-                        {% endfor %}
-                    </ul>
-                </td>
-                <td>
-                    <ul>
-                        {% for document in documents %}
-                            {% if document.client_status == 'Ancien' %}
-                                <li>{{ document.nom }}</li>
-                            {% endif %}
-                        {% endfor %}
-                    </ul>
-                </td>
-            </tr>
-        </table>
+    <div id="document_credit" class="documents-section">
+        <div class="section-header">
+            <h2><i class="fas fa-file-signature"></i> Documents nécessaires</h2>
+            <p><i class="fas fa-clock"></i> Préparez votre dossier en avance pour un traitement plus rapide</p>
+        </div>
+        
+        <div class="documents-table">
+            <div class="doc-column">
+                <div class="doc-header">
+                    <h3><i class="fas fa-user-plus"></i> Nouveau Client</h3>
+                </div>
+                <ul class="doc-list">
+                    {% for document in documents %}
+                        {% if document.client_status == 'Nouveau' %}
+                            <li>
+                                <i class="doc-icon fas fa-file-alt"></i>
+                                {{ document.nom_document }}
+                            </li>
+                        {% endif %}
+                    {% empty %}
+                        <li><i class="fas fa-times-circle"></i> Aucun document requis</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            
+            <div class="doc-column">
+                <div class="doc-header">
+                    <h3><i class="fas fa-user-check"></i> Ancien Client</h3>
+                </div>
+                <ul class="doc-list">
+                    {% for document in documents %}
+                        {% if document.client_status == 'Ancien' %}
+                            <li>
+                                <i class="doc-icon fas fa-file-alt"></i>
+                                {{ document.nom_document }}
+                            </li>
+                        {% endif %}
+                    {% empty %}
+                        <li><i class="fas fa-times-circle"></i> Aucun document requis</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        
+        <div class="documents-footer">
+            <p><i class="fas fa-exclamation-circle"></i> <strong>Note :</strong> Des documents complémentaires pourraient être demandés selon votre situation.</p>
+        </div>
     </div>
 </div>
 {% endblock %}

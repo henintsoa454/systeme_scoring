@@ -13,11 +13,7 @@ def is_service_client(user):
 @user_passes_test(is_service_client)
 def offres_credit(request):
     type_credits = TypeCredit.objects.prefetch_related('soustypecredit_set').all()
-    if request.user.is_authenticated:
-        client_status = 'Nouveau' if hasattr(request.user, 'profile') and request.user.profile.client_status == 'Nouveau' else 'Ancien'
-        documents = DocumentCredit.objects.filter(client_status=client_status)
-    else:
-        documents = []
+    documents = DocumentCredit.objects.all()
 
     return render(request, 'service_client/offres_credit.html', {
         'type_credits': type_credits,

@@ -1,123 +1,365 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
-    color: #333;
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: #e3e4e6;
+    /* Changé */
+    color: #212529;
     margin: 0;
     padding: 0;
+    line-height: 1.6;
 }
 
 #content {
-    width: 80%;
-    margin: auto;
-    padding: 20px;
+    width: 85%;
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #9d9ea0;
+    /* Changé */
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    color: #e50005;
+    /* Changé */
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.page-header .lead {
+    font-size: 1.2rem;
+    color: #9d9ea0;
+    /* Changé */
+    max-width: 700px;
+    margin: 0 auto;
 }
 
 
-/* Style pour chaque type de crédit */
+/* Type de crédit section */
 
 .type-credit-section {
-    margin-bottom: 40px;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    margin-bottom: 50px;
     background-color: #fff;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-}
-
-.type-credit-section h2 {
-    font-size: 1.8em;
-    color: #003366;
-    margin-bottom: 10px;
-}
-
-.type-credit-section p {
-    font-size: 1em;
-    color: #666;
-    margin-bottom: 20px;
-}
-
-.offre {
-    margin-bottom: 20px;
-    padding: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #fafafa;
-    position: relative;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     overflow: hidden;
-    transition: transform 0.3s ease;
+    border: 1px solid #e3e4e6;
+    /* Ajouté */
 }
 
-.offre:hover {
-    transform: scale(1.02);
+.credit-type-header {
+    padding: 25px 30px;
+    background-color: #e3e4e6;
+    /* Changé */
+    border-bottom: 1px solid #9d9ea0;
+    /* Changé */
+}
+
+.credit-type-header h2 {
+    font-size: 1.8rem;
+    color: #e50005;
+    /* Changé */
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.type-description {
+    color: #9d9ea0;
+    /* Changé */
+    font-size: 1.05rem;
+    margin: 0;
+}
+
+.offres-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 25px;
+    padding: 30px;
 }
 
 
-/* Overlay style for "Faire une simulation" */
+/* Carte d'offre */
 
-.overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.6);
+.offre-card {
+    border: 1px solid #9d9ea0;
+    /* Changé */
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    color: #fff;
-    font-size: 1.2em;
+    flex-direction: column;
+    height: 100%;
+    background-color: #fff;
+    position: relative;
+}
+
+.offre-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(229, 0, 5, 0.1);
+    /* Changé */
+    border-color: #e50005;
+    /* Changé */
+}
+
+.card-header {
+    padding: 20px;
+    background-color: #e3e4e6;
+    /* Changé */
+    border-bottom: 1px solid #9d9ea0;
+    /* Changé */
+    position: relative;
+}
+
+.card-header h3 {
+    font-size: 1.4rem;
+    color: #e50005;
+    /* Changé */
+    margin: 0;
+    font-weight: 600;
+}
+
+.card-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background-color: #e50005;
+    /* Changé */
+    color: white;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
     font-weight: bold;
-    text-transform: uppercase;
-    text-align: center;
-}
-
-.offre:hover .overlay {
-    opacity: 1;
-    cursor: pointer;
-}
-
-.card-header h4 {
-    font-size: 1.5em;
-    color: #333;
 }
 
 .card-body {
-    margin-top: 10px;
+    padding: 20px;
+    flex-grow: 1;
 }
 
-.card-title {
-    font-size: 1.8em;
-    color: #ff6600;
-    margin-bottom: 15px;
+.montant-range {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
-.list-unstyled {
-    list-style-type: none;
+.montant-icon {
+    font-size: 1.8rem;
+    margin-right: 15px;
+    color: #e50005;
+    /* Changé */
+}
+
+.montant-min,
+.montant-max {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #e50005;
+    /* Changé */
+}
+
+.montant-separator {
+    margin: 0 5px;
+    color: #9d9ea0;
+    /* Changé */
+}
+
+.montant-devise {
+    font-size: 1rem;
+    color: #9d9ea0;
+    /* Changé */
+    margin-left: 5px;
+}
+
+.offre-features {
+    list-style: none;
     padding: 0;
+    margin: 0;
 }
 
-.list-unstyled li {
-    margin: 5px 0;
-    font-size: 1em;
-    color: #444;
+.offre-features li {
+    margin-bottom: 12px;
+    display: flex;
+    align-items: flex-start;
+}
+
+.feature-icon {
+    margin-right: 10px;
+    font-size: 1.2rem;
+    color: #e50005;
+    /* Changé */
+}
+
+.feature-description {
+    color: #9d9ea0;
+    /* Changé */
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.simulation-btn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 25px;
+    background-color: #e50005;
+    /* Changé */
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.simulation-btn:hover {
+    background-color: #c40004;
+    /* Nuance plus foncée */
+    transform: translateY(-2px);
+}
+
+.btn-icon {
+    font-size: 1.2rem;
+    transition: transform 0.3s;
+}
+
+.simulation-btn:hover .btn-icon {
+    transform: translateX(5px);
 }
 
 
-/* Responsive adjustments */
+/* Section documents */
+
+.documents-section {
+    margin-top: 50px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 30px;
+    border: 1px solid #e3e4e6;
+    /* Ajouté */
+}
+
+.section-header {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.section-header h2 {
+    font-size: 2rem;
+    color: #e50005;
+    /* Changé */
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.section-header p {
+    color: #9d9ea0;
+    /* Changé */
+    font-size: 1.05rem;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.documents-table {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 20px;
+}
+
+.doc-column {
+    border: 1px solid #9d9ea0;
+    /* Changé */
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.doc-header {
+    padding: 15px 20px;
+    background-color: #e3e4e6;
+    /* Changé */
+    border-bottom: 1px solid #9d9ea0;
+    /* Changé */
+}
+
+.doc-header h3 {
+    font-size: 1.3rem;
+    color: #e50005;
+    /* Changé */
+    margin: 0;
+    text-align: center;
+    font-weight: 600;
+}
+
+.doc-list {
+    list-style: none;
+    padding: 20px;
+    margin: 0;
+}
+
+.doc-list li {
+    padding: 10px 0;
+    border-bottom: 1px dashed #9d9ea0;
+    /* Changé */
+    display: flex;
+    align-items: center;
+}
+
+.doc-list li:last-child {
+    border-bottom: none;
+}
+
+.doc-icon {
+    margin-right: 10px;
+    color: #e50005;
+    /* Changé */
+    font-size: 1.1rem;
+}
+
+.documents-footer {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #9d9ea0;
+    /* Changé */
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #9d9ea0;
+    /* Changé */
+}
+
+
+/* Responsive */
 
 @media screen and (max-width: 768px) {
     #content {
         width: 95%;
-        padding: 10px;
+        padding: 0 15px;
     }
-    .type-credit-section,
-    .offre {
-        padding: 10px;
+    .offres-container {
+        grid-template-columns: 1fr;
+        padding: 20px;
     }
-    .card-header h4,
-    .card-title {
-        font-size: 1.4em;
+    .documents-table {
+        grid-template-columns: 1fr;
+    }
+    .page-header h1 {
+        font-size: 2rem;
+    }
+    .credit-type-header {
+        padding: 20px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .montant-range {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .montant-icon {
+        margin-bottom: 10px;
     }
 }

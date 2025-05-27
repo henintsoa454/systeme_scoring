@@ -4,53 +4,121 @@
 {% block content %}
 
 <link rel="stylesheet" href="{% static 'css/simulation_offre.css' %}">
-<div class="container" 
+<link href="{% static 'fontawesomefree/css/all.min.css' %}">
+
+<div class="simulation-container" 
      data-interest-rate="{{ sous_type.taux_interet }}" 
      data-min-term="{{ sous_type.duree_min }}" 
      data-max-term="{{ sous_type.duree_max }}" 
      data-min-amount="{{ sous_type.montant_min }}" 
      data-max-amount="{{ sous_type.montant_max }}">
-    <h1>Simulation de Crédit</h1>
-    <div class="details">
-        <div>
-            <p>Nom de l'offre: <span id="offerName">{{ sous_type.nom }}</span></p>
-            <p>Durée du prêt: <span id="termDetail">entre {{ sous_type.duree_min }} et {{ sous_type.duree_max }} mois</span></p>
-            <p>Taux mensuel: <span id="rateDetail">{{ sous_type.taux_interet }}%</span></p>
-            <p>Valeur du prêt: <span id="amountDetail">entre {{ sous_type.montant_min }} et {{ sous_type.montant_max }} MGA</span></p>
+    
+    <div class="simulation-header">
+        <h1><i class="fas fa-calculator"></i> Simulation de Crédit</h1>
+        <div class="offer-badge">
+            <i class="fas fa-tag"></i> {{ sous_type.nom }}
         </div>
-        <div>
+    </div>
+
+    <div class="offer-details">
+        <div class="detail-card">
+            <div class="detail-item">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Durée: {{ sous_type.duree_min }} - {{ sous_type.duree_max }} mois</span>
+            </div>
+            <div class="detail-item">
+                <i class="fas fa-percentage"></i>
+                <span>Taux mensuel: {{ sous_type.taux_interet }}%</span>
+            </div>
+            <div class="detail-item">
+                <i class="fas fa-money-bill-wave"></i>
+                <span>Montant: {{ sous_type.montant_min|floatformat:"0" }} - {{ sous_type.montant_max|floatformat:"0" }} MGA</span>
+            </div>
+        </div>
+        
+        <div class="offer-description">
+            <h3><i class="fas fa-info-circle"></i> Description</h3>
             <p>{{ sous_type.description }}</p>
         </div>
     </div>
 
-    <div class="simulation-inputs">
-        <div class="form-group">
-            <label for="monthlyIncome">Votre revenu mensuel (MGA)</label>
-            <input type="range" id="monthlyIncome" name="monthlyIncome" min="0" max="30000000" value="45719">
-            <span id="incomeValue">45 719 MGA</span>
+    <div class="simulation-form">
+        <div class="form-step active">
+            <h2><i class="fas fa-sliders-h"></i> Paramètres de simulation</h2>
+            
+            <div class="form-group">
+                <label for="monthlyIncome">
+                    <i class="fas fa-wallet"></i> Votre revenu mensuel (MGA)
+                </label>
+                <div class="input-range-container">
+                    <input type="range" id="monthlyIncome" min="0" max="30000000" value="45719" step="10000">
+                    <div class="range-labels">
+                        <span>0</span>
+                        <span id="incomeValue">45 719</span>
+                        <span>30 000 000</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="loanAmount">
+                    <i class="fas fa-hand-holding-usd"></i> Montant du prêt (MGA)
+                </label>
+                <div class="input-range-container">
+                    <input type="range" id="loanAmount" 
+                           min="{{ sous_type.montant_min }}" 
+                           max="{{ sous_type.montant_max }}" 
+                           value="{{ sous_type.montant_min }}"
+                           step="{% widthratio sous_type.montant_max 100 1 %}">
+                    <div class="range-labels">
+                        <span>{{ sous_type.montant_min|floatformat:"0" }}</span>
+                        <span id="loanValue">{{ sous_type.montant_min|floatformat:"0" }}</span>
+                        <span>{{ sous_type.montant_max|floatformat:"0" }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="loanTerm">
+                    <i class="fas fa-clock"></i> Durée de l'emprunt (Mois)
+                </label>
+                <div class="input-range-container">
+                    <input type="range" id="loanTerm" 
+                           min="{{ sous_type.duree_min }}" 
+                           max="{{ sous_type.duree_max }}" 
+                           value="{{ sous_type.duree_min }}">
+                    <div class="range-labels">
+                        <span>{{ sous_type.duree_min }}</span>
+                        <span id="termValue">{{ sous_type.duree_min }}</span>
+                        <span>{{ sous_type.duree_max }}</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label for="loanAmount">Montant du prêt (MGA)</label>
-            <input type="range" id="loanAmount" name="loanAmount" min="{{ sous_type.montant_min }}" max="{{ sous_type.montant_max }}" value="{{ sous_type.montant_min }}">
-            <span id="loanValue">{{ sous_type.montant_min }} MGA</span>
+        <div class="simulation-result">
+            <div class="result-card">
+                <h3><i class="fas fa-chart-pie"></i> Récapitulatif</h3>
+                <div class="result-item">
+                    <span>Mensualité sur <span id="monthlyTermResult">{{ sous_type.duree_min }}</span> mois</span>
+                    <span class="result-value" id="monthlyPayment">Calcul en cours...</span>
+                </div>
+                <div class="result-item">
+                    <span>Taux d'endettement</span>
+                    <span class="result-value" id="debtRatio">--</span>
+                </div>
+                <div class="result-item total">
+                    <span>Coût total du crédit</span>
+                    <span class="result-value" id="totalCost">--</span>
+                </div>
+            </div>
+            
+            <button class="btn-cta" id="submitApplication">
+                <i class="fas fa-paper-plane"></i> Soumettre ma demande
+            </button>
         </div>
-
-        <div class="form-group">
-            <label for="loanTerm">Durée de l'emprunt (Mois)</label>
-            <input type="range" id="loanTerm" name="loanTerm" min="{{ sous_type.duree_min }}" max="{{ sous_type.duree_max }}" value="{{ sous_type.duree_min }}">
-            <span id="termValue">{{ sous_type.duree_min }} Mois</span>
-        </div>
-    </div>
-
-    <hr>
-
-    <div class="simulation-result">
-        <h2>Résultat de votre simulation</h2>
-        <p>Montant de vos mensualités pendant <span id="monthlyTermResult">{{ sous_type.duree_min }}</span> mois</p>
-        <h3 id="monthlyPayment">Calcul en cours...</h3>
     </div>
 </div>
 
-<script src="{% static './js/simulation.js' %}"></script>
+<script src="{% static 'js/simulation.js' %}"></script>
 {% endblock %}
