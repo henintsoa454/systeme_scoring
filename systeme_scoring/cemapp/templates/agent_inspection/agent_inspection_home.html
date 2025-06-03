@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.success) {
                 alert(data.message);
                 modalRendezVous.style.display = 'none';
-                location.reload(); // Recharger la page pour voir les changements
+                location.reload();
             } else {
                 alert('Erreur: ' + data.message);
             }

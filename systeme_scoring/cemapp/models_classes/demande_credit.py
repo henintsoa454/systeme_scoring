@@ -21,12 +21,12 @@ class DemandeCredit(models.Model):
     agence = models.ForeignKey(Agence, on_delete=models.CASCADE, default=1)
     numero_credit = models.CharField(max_length=20, unique=True)
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
-    sous_type_credit = models.ForeignKey(SousTypeCredit, on_delete=models.CASCADE)  # Remplacement
+    sous_type_credit = models.ForeignKey(SousTypeCredit, on_delete=models.CASCADE)
     duree = models.IntegerField()
     montant_total = models.DecimalField(max_digits=10, decimal_places=2)
     montant_payer_mois = models.DecimalField(max_digits=10, decimal_places=2)
     motif_credit = models.TextField()
-    date_demande = models.DateField(auto_now_add=True)
+    date_demande = models.DateField()
     statut_demande = models.CharField( max_length=25, choices=STATUT_CHOICES, default='en_attente', null=False, blank=False)
     date_derniere_maj = models.DateField(auto_now_add=True)
     enregistre_par = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='demandes_enregistrees')
@@ -124,13 +124,23 @@ class DemandeCredit(models.Model):
             ]
             scores["Capacité de remboursement"] = model_capacite_remboursement.predict([repayment_capacity_data])
             scores["Capacité de remboursement"] = encoder_capacite_remboursement.inverse_transform(scores["Capacité de remboursement"])[0]
-            # Calcul final des scores
+            
             scores_dict = {
                 "situation_familiale": scores["Situation familiale"],
                 "situation_professionnelle": scores["Situation professionnelle"],
                 "situation_financiere": scores["Situation financière"],
                 "ponctualite": client.calculer_ponctualite(),
                 "capacite_remboursement": scores["Capacité de remboursement"],
+            }
+               
+            if(self.sous_type_credit.type_credit.nom == 'Crédit aux Entrepreneurs'):
+                scores_dict = {
+                "situation_familiale": scores["Situation familiale"],
+                "situation_professionnelle": scores["Situation professionnelle"],
+                "situation_financiere": scores["Situation financière"],
+                "ponctualite": client.calculer_ponctualite(),
+                "capacite_remboursement": scores["Capacité de remboursement"],
+                "inspection_environnement": self.get_scoring_inspection(user)['inspection_environnement'],
             }
 
             return scores_dict
@@ -140,56 +150,53 @@ class DemandeCredit(models.Model):
         
     def get_scoring_inspection(self,user):
         from ..models import InspectionEnvironnement
-        if(self.sous_type_credit.type_credit.isCreditEntrepreneur()):
-            model_manager = ModelManager()
-            try:
-                modele_inspection_environnement =  model_manager.load_model("inspection_environnement",user)
-                encoder_inspection_environnement = model_manager.load_encoder("situation_familiale")
-                encoder_statut_judiciaire = model_manager.load_encoder("secteur_activite") 
-                
-                inspection_environnement =  InspectionEnvironnement.objects.get(demdemande_inspectee = self)
-                
-                data_dict = {
-                    "statut_juridique": next((key for key, value in inspection_environnement.STATUT_JURIDIQUE_CHOICES if value == inspection_environnement.statut_juridique), None),
-                    "annee_creation": inspection_environnement.annee_creation,
-                    "etat_locaux": next((key for key, value in inspection_environnement.ETAT_LOCAUX_CHOICES if value == inspection_environnement.etat_locaux), None),
-                    "nombre_employes": inspection_environnement.nombre_employes,
-                    "revenu_moyen_mensuel": inspection_environnement.revenu_moyen_mensuel,
-                    "depenses_moyennes_mensuelles": inspection_environnement.depenses_moyennes_mensuelles,
-                    "rentabilite_estimee": inspection_environnement.rentabilite_estimee,
-                    "systeme_gestion": next((key for key, value in inspection_environnement.SYSTEME_GESTION_CHOICES if value == inspection_environnement.systeme_gestion), None),
-                    "niveau_concurrence": next((key for key, value in inspection_environnement.NIVEAU_CONCURRENCE_CHOICES if value == inspection_environnement.niveau_concurrence), None),
-                }
-                
-                data_dict["statut_juridique"] = encoder_statut_judiciaire.transform([data_dict["statut_juridique"]])[0]
-                ordinal_features = ["etat_locaux", "systeme_gestion", "niveau_concurrence"]
-                ordinal_values = [[data_dict[feature] for feature in ordinal_features]]
-                encoded_ordinal_values = encoder_inspection_environnement.transform(ordinal_values)[0]
-                
-                final_data = np.array([
-                    data_dict["statut_juridique"],
-                    data_dict["annee_creation"],
-                    encoded_ordinal_values[0],
-                    data_dict["nombre_employes"],
-                    data_dict["revenu_moyen_mensuel"],
-                    data_dict["depenses_moyennes_mensuelles"],
-                    data_dict["rentabilite_estimee"],
-                    encoded_ordinal_values[1],
-                    data_dict["nombre_clients_reguliers"],
-                    encoded_ordinal_values[2],
-                ]).reshape(1, -1)
-                
-                prediction = modele_inspection_environnement.predict(final_data)[0]
-                
-                score_dict = {
-                    'inspection_environnement': prediction
-                }
-                
-                return score_dict
-            except Exception as e:
-                raise RuntimeError(f"Erreur lors du calcul du scoring client: {e}")
-        else:   
-            messages.error("Scoring indisponible pour les crédits aux particuliers")
+        model_manager = ModelManager()
+        try:
+            modele_inspection_environnement =  model_manager.load_model("inspection_environnement",user)
+            encoder_inspection_environnement = model_manager.load_encoder("inspection_environnement")
+            encoder_statut_judiciaire = model_manager.load_encoder("statut_juridique") 
+            
+            inspection_environnement =  InspectionEnvironnement.objects.get(demande_inspectee = self)
+            
+            data_dict = {
+                "statut_juridique": inspection_environnement.statut_juridique,
+                "annee_creation": inspection_environnement.annee_creation,
+                "etat_locaux": inspection_environnement.etat_locaux,
+                "nombre_employes": inspection_environnement.nombre_employes,
+                "revenu_moyen_mensuel": inspection_environnement.revenu_moyen_mensuel,
+                "depenses_moyennes_mensuelles": inspection_environnement.depenses_moyennes_mensuelles,
+                "rentabilite_estimee": inspection_environnement.rentabilite_estimee,
+                "systeme_gestion": inspection_environnement.systeme_gestion,
+                "nombre_clients_reguliers": inspection_environnement.nombre_clients_reguliers,
+                "niveau_concurrence": inspection_environnement.niveau_concurrence,
+            }
+            
+            data_dict["statut_juridique"] = encoder_statut_judiciaire.transform([data_dict["statut_juridique"]])[0]
+            ordinal_features = ["etat_locaux", "systeme_gestion", "niveau_concurrence"]
+            ordinal_values = [[data_dict[feature] for feature in ordinal_features]]
+            encoded_ordinal_values = encoder_inspection_environnement.transform(ordinal_values)[0]
+            
+            final_data = np.array([
+                data_dict["statut_juridique"],
+                data_dict["annee_creation"],
+                encoded_ordinal_values[0],
+                data_dict["nombre_employes"],
+                data_dict["revenu_moyen_mensuel"],
+                data_dict["depenses_moyennes_mensuelles"],
+                data_dict["rentabilite_estimee"],
+                encoded_ordinal_values[1],
+                data_dict["nombre_clients_reguliers"],
+                encoded_ordinal_values[2],
+            ]).reshape(1, -1)
+            
+            prediction = modele_inspection_environnement.predict(final_data)[0]
+            
+            score_dict = {
+                'inspection_environnement': prediction
+            }
+            
+            return score_dict
+        except Exception as e:
             raise RuntimeError(f"Erreur lors du calcul du scoring client: {e}")
 
     

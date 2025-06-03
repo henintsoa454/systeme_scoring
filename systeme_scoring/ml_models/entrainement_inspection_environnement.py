@@ -99,5 +99,5 @@ print(f"R² moyen (CV): {cross_val_scores.mean():.2f}, Écart-type: {cross_val_s
 # Sauvegarde du meilleur modèle et des encodeurs
 joblib.dump(best_model, "modele_inspection_environnement.pkl")
 joblib.dump(ordinal_encoder, "ordinal_encoder_inspection_environnement.pkl")
-joblib.dump(encoder, "encoder_statut_juridique")
+joblib.dump(encoder, "encoder_statut_juridique.pkl")
 print("\nLe meilleur modèle et les encodeurs ont été sauvegardés avec succès.")

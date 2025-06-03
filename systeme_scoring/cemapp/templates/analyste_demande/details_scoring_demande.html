@@ -79,16 +79,25 @@
     <div class="capaciteremboursement score-card">
         <h2>Capacité de remboursement</h2>
         <div class="score-text">{{ scores.capacite_remboursement }}</div>
+        <div class="score-tooltip">
+            <h3>Critères évalués :</h3>
+            <ul>
+                <li>Revenu mensuel du client : {{ client.revenu_mensuel }} MGA</li>
+                <li>Dépense mensuel du client : {{ client.depense_mensuelles }} MGA</li>
+                <li>Dettes existantes : {{ client.dettes_existantes }} MGA</li>
+                <li>Montant demandé : {{ demande.montant_total }} MGA</li>
+                <li>Taux du crédit : {{ demande.sous_type_credit.taux_interet }} %</li>
+            </ul>
+        </div>
     </div>
     
     <div class="inspectionenvironnement score-card">
         <h2>Inspection de l'environnement</h2>
-        <div class="score-value">{{ scores.inspection|default:'-' }}</div>
-        {% if scores.inspection %}
+        <div class="score-value">{{ scores.inspection_environnement|floatformat:0|default:'-' }}/100</div>
+        {% if scores.inspection_environnement %}
         <div class="score-bar">
-            <div class="bar-fill" style="width: {{ scores.inspection }}%"></div>
+            <div class="bar-fill" style="width: {{ scores.inspection_environnement|floatformat:0 }}%"></div>
         </div>
-        <div class="score-label">{{ scores.inspection|floatformat:0 }}/100</div>
         {% else %}
         <div class="score-missing">Non renseigné</div>
         {% endif %}
@@ -115,77 +124,51 @@
             </tr>
         </table>
     </div>
+    <div class="score-global score-card">
+        <h2>Score Global</h2>
+        <div class="score-value">{{ score_general|floatformat:0 }}/100</div>
+        <div class="score-bar">
+            <div class="bar-fill" style="width: {{ score_general }}%"></div>
+        </div>
+        <div class="score-interpretation">
+            {% if score_general >= 80 %}
+                <span class="badge excellent">Excellent</span>
+                <p>Le profil du client présente un risque très faible. Approbation recommandée.</p>
+            {% elif score_general >= 60 %}
+                <span class="badge bon">Bon</span>
+                <p>Le profil du client présente un risque modéré. Approbation possible </p>
+            {% elif score_general >= 40 %}
+                <span class="badge moyen">Moyen</span>
+                <p>Le profil du client présente un risque élevé. Approbation possible mais peux représenter un risque</p>
+            {% else %}
+                <span class="badge faible">Faible</span>
+                <p>Le profil du client présente un risque très élevé. Refus recommandé.</p>
+            {% endif %}
+        </div>
+    </div>
     <div class="action-buttons">
-        <button class="btn btn-primary" id="openRendezVousModal">Planifier un Rendez-vous</button>
+        <button class="btn btn-primary" onclick="window.location.href='{% url 'transmettre_demande' demande.id%}'">Transmettre au Directeur de l'agence</button>
         <button class="btn btn-danger" id="openRefusModal">Refuser la Demande</button>
     </div>
 </div>
-<div class="modal" id="modalRendezVous">
-    <div class="modal-content">
-        <span class="close" id="closeRendezVousModal">&times;</span>
-        <h2>Planifier un Rendez-vous</h2>
-        <form method="post" action="#">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="id_date_debut_rendezvous">Date de début</label>
-                <input type="datetime-local" id="id_date_debut_rendezvous" name="date_debut_rendezvous" required>
-            </div>
-            <div class="form-group">
-                <label for="id_date_fin_rendezvous">Date de fin</label>
-                <input type="datetime-local" id="id_date_fin_rendezvous" name="date_fin_rendezvous" required>
-            </div>
-            <div class="form-group">
-                <label for="id_lieu">Lieu</label>
-                <input type="text" id="id_lieu" name="lieu" required>
-            </div>
-            <button type="submit" class="btn btn-submit">Enregistrer le rendez-vous</button>
-        </form>
-    </div>
-</div>
-
 <div class="modal" id="modalRefus">
     <div class="modal-content">
         <span class="close" id="closeRefusModal">&times;</span>
         <h2>Raison du Refus</h2>
-        <form id="refusForm">
+        <form id="refusForm" method="post" action="{% url 'refus_demande' demande.id%}">
+            {% csrf_token %}
             <div class="form-group">
-                <label for="raisonRefus" class="form-label">Raison du Refus</label>
-                <select class="form-select" id="raisonRefus" required>
-                    <option value="score_inferieur">Score trop faible</option>
-                    <option value="dossier_incomplet">Dossier incomplet</option>
-                    <option value="autre">Autre</option>
-                </select>
+                <label for="raisonRefus">Veuillez indiquer la raison du refus :</label>
+                <textarea class="form-control" id="raisonRefus" name="raison_refus" required rows="5"></textarea>
             </div>
-            <div class="form-group" id="autreRaison" style="display: none;">
-                <label for="detailsRefus" class="form-label">Détails supplémentaires</label>
-                <textarea class="form-control" id="detailsRefus"></textarea>
-            </div>
-            <button type="submit" class="btn btn-danger">Refuser</button>
+            <button type="submit" class="btn btn-danger">Confirmer le refus</button>
         </form>
     </div>
 </div>
 <script>
-    document.querySelectorAll('.score-card').forEach(card => {
-        card.addEventListener('click', (e) => {
-            e.stopPropagation();
-        });
-    });
-    
-    const openRendezVousModal = document.getElementById('openRendezVousModal');
-    const closeRendezVousModal = document.getElementById('closeRendezVousModal');
-    const modalRendezVous = document.getElementById('modalRendezVous');
-    
     const openRefusModal = document.getElementById('openRefusModal');
     const closeRefusModal = document.getElementById('closeRefusModal');
     const modalRefus = document.getElementById('modalRefus');
-    
-    openRendezVousModal.addEventListener('click', () => {
-        modalRendezVous.style.display = 'block';
-    });
-    
-    closeRendezVousModal.addEventListener('click', () => {
-        modalRendezVous.style.display = 'none';
-    });
     
     openRefusModal.addEventListener('click', () => {
         modalRefus.style.display = 'block';
@@ -195,22 +178,36 @@
         modalRefus.style.display = 'none';
     });
     
-    document.getElementById('raisonRefus').addEventListener('change', function() {
-        const autreRaison = document.getElementById('autreRaison');
-        if (this.value === 'autre') {
-            autreRaison.style.display = 'block';
-        } else {
-            autreRaison.style.display = 'none';
-        }
-    });
-
     window.addEventListener('click', function(event) {
-        if (event.target === modalRendezVous) {
-            modalRendezVous.style.display = 'none';
-        }
         if (event.target === modalRefus) {
             modalRefus.style.display = 'none';
         }
+    });
+
+    document.getElementById('refusForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        fetch(this.action, {
+            method: 'POST',
+            body: new FormData(this),
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                modalRendezVous.style.display = 'none';
+                location.reload();
+            } else {
+                alert('Erreur: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Une erreur est survenue');
+        });
     });
 </script>
 

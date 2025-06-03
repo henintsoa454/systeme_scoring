@@ -22,9 +22,7 @@ def is_gestionnaire_demande(user):
 @login_required
 @user_passes_test(is_gestionnaire_demande)
 def gestionnaire_home(request):
-    dernieres_demandes = DemandeCredit.objects.filter(
-        statut_demande__in=['en_attente_validation', 'en_attente_signature']
-    ).order_by('-date_demande')[:10]
+    dernieres_demandes = DemandeCredit.objects.order_by('-date_demande')[:10]
 
     return render(request, 'gestionnaire_demande/gestionnaire_home.html', {'demandes': dernieres_demandes})
 
@@ -252,59 +250,75 @@ def nouvelle_demande(request):
     })
 
 
-@login_required
-@user_passes_test(is_gestionnaire_demande)
 def modifier_demande(request, demande_id):
     demande = get_object_or_404(DemandeCredit, id=demande_id)
 
-    # Vérifiez si la demande est modifiable
+    # Vérification si la demande est modifiable
     if not demande.est_modifiable():
         messages.error(request, "Seules les demandes en attente peuvent être modifiées.")
         return redirect('gestionnairedemandes')
 
+    # Récupération des données nécessaires pour le formulaire
+    types_credit = TypeCredit.objects.all()
+    sous_types_credit = SousTypeCredit.objects.filter(type_credit=demande.sous_type_credit.type_credit)
+
     if request.method == 'POST':
-        sous_type_credit_id = request.POST.get('sous_type_credit')
-        duree = request.POST.get('duree')
-        montant_total = request.POST.get('montant_total')
-        motif_credit = request.POST.get('motif_credit')
+        form_data = request.POST
+        
+        try:
+            # Validation des données
+            sous_type_credit_id = form_data.get('sous_type_credit')
+            duree = int(form_data.get('duree'))
+            montant_total = Decimal(form_data.get('montant_total'))
+            motif_credit = form_data.get('motif_credit', '').strip()
 
-        # Validation des champs requis
-        if sous_type_credit_id and duree and montant_total:
+            if not all([sous_type_credit_id, duree, montant_total, motif_credit]):
+                raise ValueError("Tous les champs obligatoires doivent être remplis.")
+
+            if duree <= 0:
+                raise ValueError("La durée doit être supérieure à zéro.")
+
+            if montant_total <= 0:
+                raise ValueError("Le montant total doit être positif.")
+
+            # Récupération du sous-type de crédit
             sous_type_credit = get_object_or_404(SousTypeCredit, id=sous_type_credit_id)
-            taux_interet = sous_type_credit.taux_interet
+            
+            # Vérification des limites de montant
+            if montant_total < sous_type_credit.montant_min or montant_total > sous_type_credit.montant_max:
+                raise ValueError(
+                    f"Le montant doit être entre {sous_type_credit.montant_min} et {sous_type_credit.montant_max}"
+                )
 
-            # Calcul du montant à payer par mois avec taux d'intérêt
-            try:
-                montant_total = Decimal(montant_total)  # Assurez-vous que montant_total est un Decimal
-                duree = Decimal(duree)
-                taux_interet = Decimal(taux_interet)
-
-                montant_mensuel = (montant_total / duree) * (1 + taux_interet / Decimal(100))
-            except ZeroDivisionError:
-                messages.error(request, "La durée ne peut pas être zéro.")
-                return redirect('modificationdemande', demande_id=demande_id)
+            # Calcul du montant mensuel avec intérêt
+            taux_interet = Decimal(sous_type_credit.taux_interet)
+            montant_mensuel = (montant_total / Decimal(duree)) * (1 + taux_interet / Decimal(100))
 
             # Mise à jour de la demande
             demande.sous_type_credit = sous_type_credit
             demande.duree = duree
             demande.montant_total = montant_total
-            demande.montant_payer_mois = montant_mensuel
+            demande.montant_payer_mois = montant_mensuel.quantize(Decimal('0.01'))  # Arrondi à 2 décimales
             demande.motif_credit = motif_credit
             demande.save()
 
             messages.success(request, "La demande a été modifiée avec succès.")
             return redirect('gestionnairedemandes')
-        else:
-            messages.error(request, "Tous les champs obligatoires doivent être remplis.")
 
-    types_credit = TypeCredit.objects.all()
-    sous_types_credit = SousTypeCredit.objects.filter(type_credit=demande.sous_type_credit.type_credit)
+        except ValueError as e:
+            messages.error(request, str(e))
+        except Exception as e:
+            messages.error(request, f"Une erreur est survenue: {str(e)}")
 
-    return render(request, 'gestionnaire_demande/modifie_demande.html', {
+    # Préparation du contexte pour le template
+    context = {
         'demande': demande,
         'types_credit': types_credit,
         'sous_types_credit': sous_types_credit,
-    })
+        'messages': messages.get_messages(request),
+    }
+    
+    return render(request, 'gestionnaire_demande/modifie_demande.html', context)
  
 @login_required
 @user_passes_test(is_gestionnaire_demande)   

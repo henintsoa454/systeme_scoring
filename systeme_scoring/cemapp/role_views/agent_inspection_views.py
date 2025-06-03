@@ -86,7 +86,13 @@ def creer_rendezvous(request):
 def creer_inspection(request):
     rendezvous_id = request.POST.get('rendezvous_id')
     rendezvous = get_object_or_404(RendezvousInspection, id=rendezvous_id)
-    
+    revenu = int(request.POST.get('revenu_moyen_mensuel'))
+    depense = int(request.POST.get('depenses_moyennes_mensuelles'))
+    revenu_estimation = revenu - depense
+    if revenu != 0:
+        marge_rentabilite = (revenu_estimation / revenu) * 100
+    else:
+        marge_rentabilite = 0
     inspection = InspectionEnvironnement.objects.create(
         nom_entreprise=request.POST.get('nom_entreprise'),
         adresse=request.POST.get('adresse'),
@@ -100,7 +106,7 @@ def creer_inspection(request):
         systeme_gestion=request.POST.get('systeme_gestion'),
         revenu_moyen_mensuel=request.POST.get('revenu_moyen_mensuel'),
         depenses_moyennes_mensuelles=request.POST.get('depenses_moyennes_mensuelles'),
-        rentabilite_estimee=request.POST.get('rentabilite_estimee'),
+        rentabilite_estimee=marge_rentabilite,
         nombre_clients_reguliers=request.POST.get('nombre_clients_reguliers'),
         zone_geographique_ventes=request.POST.get('zone_geographique_ventes'),
         niveau_concurrence=request.POST.get('niveau_concurrence'),
@@ -114,6 +120,8 @@ def creer_inspection(request):
     rendezvous.inspection_complete = True
     rendezvous.save()
     
+    rendezvous.demande.statut_demande = 'en_attente_validation'
+    rendezvous.demande.save()
     return JsonResponse({'success': True, 'message': 'Inspection enregistrée avec succès'})
 
 @login_required

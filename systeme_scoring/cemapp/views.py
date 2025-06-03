@@ -3,6 +3,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from .models_classes.rendezvous_inspection import RendezvousInspection
+from .models_classes.rendezvous_directeur import RendezvousDirecteur
 from datetime import datetime
 
 def user_login(request):
@@ -50,3 +51,20 @@ def proposer_date(request, token):
             messages.error(request, "Données invalides")
     
     return render(request, 'client/proposition_date_inspection.html', {'rendezvous': rendezvous})
+
+def proposer_date_finalisation(request, token):
+    rendezvous = get_object_or_404(RendezvousDirecteur, token=token)
+    
+    if request.method == 'POST':
+        try:
+            rendezvous.date_proposee = timezone.make_aware(
+                datetime.strptime(request.POST['date_proposee'], '%Y-%m-%dT%H:%M'))
+            rendezvous.raison_proposition = request.POST['raison_proposition']
+            rendezvous.statut_proposition = 'en_attente'
+            rendezvous.save()
+            return redirect('confirmation_proposition')
+            
+        except (ValueError, KeyError) as e:
+            messages.error(request, "Données invalides")
+    
+    return render(request, 'client/proposition_date_finalisation.html', {'rendezvous': rendezvous})

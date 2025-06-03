@@ -1,152 +1,227 @@
 {% extends base_template %}
 {% block content %}
 {% load static %}
-<div class="container mt-5">
-    <h1 class="text-center">Performances des Employés</h1>
-    <div class="row mt-4">
-        <div class="col-md-4">
-            <form id="filter-form">
-                <div class="form-group">
-                    <label for="year">Année</label>
-                    <select class="form-control" id="year" name="year">
-                        {% for y in years %}
-                        <option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="month">Mois</label>
-                    <select id="month" name="month">
-                        <option value="">Tous les mois</option>
-                        <option value="1">Janvier</option>
-                        <option value="2">Février</option>
-                        <option value="3">Mars</option>
-                        <option value="4">Avril</option>
-                        <option value="5">Mai</option>
-                        <option value="6">Juin</option>
-                        <option value="7">Juillet</option>
-                        <option value="8">Août</option>
-                        <option value="9">Septembre</option>
-                        <option value="10">Octobre</option>
-                        <option value="11">Novembre</option>
-                        <option value="12">Décembre</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary mt-3">Filtrer</button>
-            </form>
-        </div>
-        <div class="col-md-8">
-            <canvas id="employee-performance-chart"></canvas>
-        </div>
+
+<link rel="stylesheet" href="{% static 'css/performance_generale.css' %}">
+
+<div class="chart-container">
+    <h3>Répartition des demandes par statut</h3>
+    
+    <!-- Filtres -->
+    <div id="filters" class="filter">
+        <span>
+            <label for="year">Année:</label>
+            <select id="year">
+                <option value="">Toutes les années</option>
+                {% for y in years %}
+                    <option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>
+                {% endfor %}
+            </select>
+        </span>
+
+        <span>
+            <label for="month">Mois:</label>
+            <select id="month">
+                <option value="">Tous les mois</option>
+                <option value="1">Janvier</option>
+                <option value="2">Février</option>
+                <option value="3">Mars</option>
+                <option value="4">Avril</option>
+                <option value="5">Mai</option>
+                <option value="6">Juin</option>
+                <option value="7">Juillet</option>
+                <option value="8">Août</option>
+                <option value="9">Septembre</option>
+                <option value="10">Octobre</option>
+                <option value="11">Novembre</option>
+                <option value="12">Décembre</option>
+            </select>
+        </span>
     </div>
+
+    <!-- Graphique camembert -->
+    <canvas id="statusPieChart"></canvas>
+    
+    
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Fonction pour charger les données depuis l'API
-    function loadPerformanceData() {
+    // Couleurs pour le graphique
+    const colors = [
+        'rgba(229, 0, 5, 0.7)',     // Rouge - Approuvé
+        'rgba(159, 160, 162, 0.7)', // Gris - Rejeté
+        'rgba(255, 205, 86, 0.7)',  // Jaune - En attente
+        'rgba(54, 162, 235, 0.7)',  // Bleu - En cours
+        'rgba(153, 102, 255, 0.7)', // Violet - Terminé
+        'rgba(75, 192, 192, 0.7)'   // Vert - Autres statuts
+    ];
+
+    // Variable pour stocker l'instance du graphique
+    let statusPieChart;
+
+    // Fonction pour charger les données
+    async function loadStatusData() {
         const year = document.getElementById('year').value;
         const month = document.getElementById('month').value;
-
-        fetch(`/api/get_performance_employes/?annee=${year}&mois=${month}`)
-            .then(response => response.json())
-            .then(data => {
-                updateChart(data);
-            })
-            .catch(error => console.error('Erreur lors de la récupération des données:', error));
+        
+        try {
+            const response = await fetch(`/api/get_statut_demande/?year=${year}&month=${month}`);
+            const data = await response.json();
+            
+            if (data.success) {
+                updateChart(data.data);
+                updateStatsTable(data.data);
+            } else {
+                console.error('Erreur:', data.error);
+            }
+        } catch (error) {
+            console.error('Erreur de requête:', error);
+        }
     }
 
     // Fonction pour mettre à jour le graphique
     function updateChart(data) {
-        console.log("Données reçues pour le graphique :", data);
+        const statutNames = {
+            'approuve': 'Approuvé',
+            'rejete': 'Rejeté',
+            'en_attente': 'En attente',
+            'en_attente_inspection': "En inspection",
+            'en_attente_validation': 'En validation',
+            'en_attente_signature': 'En signature',
+            'termine': 'Terminé'
+        };
+    
+        const labels = Object.keys(data).map(key => statutNames[key] || key);
+        const values = Object.values(data);
 
-        const labels = data.labels;
-        const totals = data.totals;
-        const approuves = data.approuves;
-        const rejetes = data.rejetes;
-        const en_attente = data.en_attente;
-
-        performanceChart.data.labels = labels;
-        performanceChart.data.datasets[0].data = totals;
-        performanceChart.data.datasets[1].data = approuves;
-        performanceChart.data.datasets[2].data = rejetes;
-        performanceChart.data.datasets[3].data = en_attente;
-        performanceChart.update();
-    }
-
-    // Initialisation du graphique
-    const ctx = document.getElementById('employee-performance-chart').getContext('2d');
-    const performanceChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: [],
-            datasets: [
-                {
-                    label: 'Total Traité',
-                    data: [],
-                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
+        // Mise à jour du camembert
+        const pieCtx = document.getElementById('statusPieChart').getContext('2d');
+        
+        if (statusPieChart) {
+            statusPieChart.destroy();
+        }
+        
+        statusPieChart = new Chart(pieCtx, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: colors,
+                    borderColor: '#fff',
                     borderWidth: 1
-                },
-                {
-                    label: 'Approuvés',
-                    data: [],
-                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
-                },
-                {
-                    label: 'Rejetés',
-                    data: [],
-                    backgroundColor: 'rgba(255, 99, 132, 0.6)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 1
-                },
-                {
-                    label: 'En Attente',
-                    data: [],
-                    backgroundColor: 'rgba(255, 205, 86, 0.6)',
-                    borderColor: 'rgba(255, 205, 86, 1)',
-                    borderWidth: 1
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-                title: {
-                    display: true,
-                    text: 'Performances des Employés'
-                }
+                }]
             },
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Employés'
-                    }
-                },
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Nombre de Demandes'
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const value = context.raw;
+                                const percentage = Math.round((value / total) * 100);
+                                return `${context.label}: ${value} (${percentage}%)`;
+                            }
+                        }
                     }
                 }
             }
+        });
+    }
+
+    // Fonction pour mettre à jour le tableau
+    function updateStatsTable(data) {
+        const tbody = document.getElementById('stats-body');
+        tbody.innerHTML = '';
+        
+        const total = Object.values(data).reduce((sum, value) => sum + value, 0);
+        
+        Object.entries(data).forEach(([statut, count]) => {
+            const percentage = total > 0 ? ((count / total) * 100).toFixed(2) : 0;
+            
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${statut}</td>
+                <td>${count}</td>
+                <td>${percentage}%</td>
+            `;
+            tbody.appendChild(row);
+        });
+        
+        // Ajouter la ligne de total
+        if (total > 0) {
+            const totalRow = document.createElement('tr');
+            totalRow.className = 'total-row';
+            totalRow.innerHTML = `
+                <td><strong>Total</strong></td>
+                <td><strong>${total}</strong></td>
+                <td><strong>100%</strong></td>
+            `;
+            tbody.appendChild(totalRow);
         }
-    });
+    }
 
-    // Écouteur d'événement pour le filtre
-    document.getElementById('filter-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        loadPerformanceData();
-    });
+    // Filtres automatiques
+    document.getElementById('year').addEventListener('change', loadStatusData);
+    document.getElementById('month').addEventListener('change', loadStatusData);
 
-    // Charger les données initiales
-    loadPerformanceData();
+    // Chargement initial
+    document.addEventListener('DOMContentLoaded', function() {
+        loadStatusData();
+        
+        // Pré-sélectionner le mois actuel
+        const currentMonth = new Date().getMonth() + 1;
+        document.getElementById('month').value = currentMonth;
+    });
 </script>
+
+<style>
+    /* Style complémentaire pour harmoniser avec performance_generale.css */
+    .stats-container {
+        margin-top: 20px;
+        background-color: #f5f5f5;
+        border-radius: 5px;
+        padding: 15px;
+    }
+    
+    .stats-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .stats-table th {
+        background-color: #e50005;
+        color: white;
+        padding: 10px;
+        text-align: left;
+    }
+    
+    .stats-table td {
+        padding: 10px;
+        border-bottom: 1px solid #e3e4e6;
+    }
+    
+    .stats-table tr:hover {
+        background-color: #f0f0f0;
+    }
+    
+    .total-row {
+        background-color: #e3e4e6;
+    }
+    
+    .total-row td {
+        font-weight: bold;
+    }
+    
+    /* Adaptation du pie chart */
+    #statusPieChart {
+        margin: 20px auto;
+        max-height: 400px;
+    }
+</style>
 {% endblock %}

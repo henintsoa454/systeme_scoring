@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contrat de Crédit - Caisse d'Épargne de Madagascar</title>
+    <style type="text/css">
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            line-height: 1.5;
+            color: #333;
+            font-size: 11pt;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e50005;
+        }
+        
+        .header h1 {
+            color: #e50005;
+            font-size: 18pt;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .header h2 {
+            color: #555;
+            font-size: 14pt;
+            margin-top: 0;
+        }
+        
+        .contract-info span {
+            display: inline-block;
+            width: 48%;
+        }
+        
+        .parties {
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-left: 4px solid #e50005;
+        }
+        
+        .section {
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-weight: bold;
+            color: #e50005;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 3px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 10pt;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 6px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f5f5f5;
+        }
+        
+        .signature-area {
+            margin-top: 50px;
+        }
+        
+        .signature-block {
+            width: 45%;
+            float: left;
+        }
+        
+        .signature-line {
+            border-top: 1px solid #000;
+            margin: 40px 0 10px;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 9pt;
+            color: #777;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+            clear: both;
+        }
+        
+        .highlight {
+            background-color: #fff8e1;
+            padding: 0 3px;
+        }
+        
+        .important-note {
+            background-color: #f8f8f8;
+            border-left: 4px solid #e50005;
+            padding: 8px;
+            margin: 10px 0;
+        }
+        
+        ul {
+            padding-left: 20px;
+        }
+        
+        li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="header">
+        <h1>CONTRAT DE CRÉDIT</h1>
+        <h2>CAISSE D'ÉPARGNE DE MADAGASCAR</h2>
+        <div class="contract-info">
+            <span>N° Contrat: <strong>{{ demande.numero_credit }}</strong></span>
+            <span>Date: <strong>{{ date_aujourdhui }}</strong></span>
+        </div>
+    </div>
+
+    <div class="parties">
+        <p><strong>Entre les soussignés :</strong></p>
+        <p>La <strong>Caisse d'Épargne de Madagascar</strong>, Société Anonyme au capital de 5 000 000 000 Ariary, immatriculée au Registre du Commerce et des Sociétés de Madagascar sous le numéro XXXXX, ayant son siège social à Antananarivo, représentée par [Nom du représentant], dûment habilité à l'effet des présentes,</p>
+        <p>Ci-après dénommée "la CEM",</p>
+        <p>D'une part,</p>
+        <p>Et</p>
+        <p><strong>{{ client.nom }} {{ client.prenom }}</strong>, de nationalité malgache, né le <span class="highlight">{{ client.date_naissance|date:"d/m/Y" }}</span> à <span class="highlight">{{ client.lieu_naissance|default:"Antananarivo" }}</span>, demeurant <span class="highlight">{{ client.adresse }}</span>, titulaire de la Carte d'Identité Nationale N° <span class="highlight">{{ client.n_cin }}</span>,</p>
+        <p>Ci-après dénommé "l'Emprunteur",</p>
+        <p>D'autre part.</p>
+    </div>
+
+    <div class="section">
+        <div class="section-title">ARTICLE 1 - OBJET</div>
+        <p>Le présent contrat a pour objet de définir les conditions dans lesquelles la CEM consent à l'Emprunteur un crédit de type <span class="highlight">{{ demande.sous_type_credit.nom }}</span> d'un montant de <span class="highlight">{{ demande.montant_total|floatformat:"0" }}</span> Ariary (MGA).</p>
+        <p>Le motif du crédit est : <span class="highlight">{{ demande.motif_credit }}</span>.</p>
+    </div>
+
+    <div class="section">
+        <div class="section-title">ARTICLE 2 - CONDITIONS DU CRÉDIT</div>
+        <p>Le crédit est accordé aux conditions suivantes :</p>
+        <table>
+            <tr>
+                <th>Élément</th>
+                <th>Valeur</th>
+            </tr>
+            <tr>
+                <td>Montant total du crédit</td>
+                <td><strong>{{ demande.montant_total|floatformat:"0" }}</strong> MGA</td>
+            </tr>
+            <tr>
+                <td>Durée</td>
+                <td><strong>{{ demande.duree }}</strong> mois</td>
+            </tr>
+            <tr>
+                <td>Taux d'intérêt annuel</td>
+                <td><strong>{{ demande.sous_type_credit.taux_interet }}</strong>%</td>
+            </tr>
+            <tr>
+                <td>Mensualité</td>
+                <td><strong>{{ demande.montant_payer_mois|floatformat:"0" }}</strong> MGA</td>
+            </tr>
+            <tr>
+                <td>Date de première échéance</td>
+                <td><strong>{{ demande.date_premiere_echeance|date:"d/m/Y" }}</strong></td>
+            </tr>
+        </table>
+        <p>Le détail du tableau d'amortissement est annexé au présent contrat.</p>
+    </div>
+
+    <div class="section">
+        <div class="section-title">ARTICLE 3 - MODALITÉS DE REMBOURSEMENT</div>
+        <p>L'Emprunteur s'engage à rembourser le crédit par mensualités constantes, selon le calendrier de remboursement annexé au présent contrat.</p>
+        <p>Les mensualités sont prélevées le <strong class="highlight">{{ demande.jour_prelevement }}</strong> de chaque mois sur le compte de l'Emprunteur ouvert à la CEM (N° <span class="highlight">{{ client.numero_compte|default:"Non spécifié" }}</span>).</p>
+        
+        <div class="important-note">
+            <strong>EN CAS DE RETARD DE PAIEMENT :</strong> L'Emprunteur sera redevable de pénalités de retard calculées au taux de 0,1% par jour de retard sur le montant de l'échéance échue.
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">ARTICLE 4 - GARANTIES</div>
+        <p>Le présent crédit est assorti des garanties suivantes :</p>
+        <ul>
+            {% if demande.garanties.all %}
+                {% for garantie in demande.garanties.all %}
+                    <li><strong>{{ garantie.type_garantie }} :</strong> {{ garantie.description }}</li>
+                {% endfor %}
+            {% else %}
+                <li><strong>Caution solidaire</strong></li>
+            {% endif %}
+        </ul>
+    </div>
+
+    <div class="signature-area">
+        <div class="signature-block">
+            <p>Pour la Caisse d'Épargne de Madagascar</p>
+            <span class="signature-line"></span>
+            <p><strong>{{ demande.traite_par.nom }} {{ demande.traite_par.prenom }}</strong></p>
+            <p>Fait à Antananarivo, le {{ date_aujourdhui }}</p>
+        </div>
+        
+        <div class="signature-block">
+            <p>L'Emprunteur</p>
+            <span class="signature-line"></span>
+            <p><strong>{{ client.nom }} {{ client.prenom }}</strong></p>
+            <p>Fait à Antananarivo, le {{ date_aujourdhui }}</p>
+        </div>
+    </div>
+</body>
+</html>

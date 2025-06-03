@@ -43,6 +43,7 @@ class CustomUser(AbstractBaseUser):
 
     username = models.CharField(max_length=150, unique=True)
     email = models.EmailField(max_length=255, unique=True)
+    numero_telephone = models.CharField(max_length=15,blank=True,null=True)
     role = models.CharField(max_length=25, choices=ROLE_CHOICES, default='service_client')
 
     objects = CustomUserManager()

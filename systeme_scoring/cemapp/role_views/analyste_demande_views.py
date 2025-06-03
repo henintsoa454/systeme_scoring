@@ -7,7 +7,7 @@ from sklearn.base import ClassifierMixin, RegressorMixin
 from sklearn.metrics import f1_score, mean_squared_error, precision_score, recall_score,accuracy_score,r2_score
 from systeme_scoring import settings
 from ml_models.model_manager import ModelManager
-from ..models_classes.rendezvous_finalisation import RendezvousFinalisation
+from ..models_classes.inspection_environnement import InspectionEnvironnement
 from ..models_classes.demande_credit import DemandeCredit
 from ..models_classes.client import Client
 from random import choice, randint, uniform
@@ -41,8 +41,25 @@ def details_demande(request, demande_id):
     demande = get_object_or_404(DemandeCredit,id=demande_id)
     client = demande.client
     scores_dict = demande.get_scoring_client(request.user)
+    inspection_environnement = get_object_or_404(InspectionEnvironnement,demande_inspectee_id=demande_id)
+    if(demande.sous_type_credit.type_credit.nom == 'Crédit aux Entrepreneurs'):
+        scores = [
+            scores_dict["situation_familiale"],
+            scores_dict["situation_professionnelle"],
+            scores_dict["situation_financiere"],
+            scores_dict["inspection_environnement"],
+        ]
+        score_general = sum(scores) / len(scores)
+        return render(request, "analyste_demande/details_scoring_demande.html", {"client": client, "demande": demande, "inspection": inspection_environnement, "scores": scores_dict, "score_general": score_general})
+    else:
+        scores = [
+            scores_dict["situation_familiale"],
+            scores_dict["situation_professionnelle"],
+            scores_dict["situation_financiere"],
+        ]
+        score_general = sum(scores) / len(scores)
 
-    return render(request, "analyste_demande/details_scoring_demande.html", {"client": client, "demande": demande, "scores": scores_dict})
+        return render(request, "analyste_demande/details_scoring_demande.html", {"client": client, "demande": demande, "scores": scores_dict, "score_general": score_general})
 
 
 def feature_importance_page(request):
@@ -127,58 +144,6 @@ def update_feature_importances(request):
     else:
         return JsonResponse({"error": "Invalid request method."}, status=405)
 
-
-@login_required
-@user_passes_test(is_analyste)
-def create_rendezvous(request, demande_id):
-    demande = get_object_or_404(DemandeCredit, id=demande_id)
-
-    if demande.statut != "en_attente_validation":
-        messages.error(request, "Cette demande n'est pas en attente.")
-        return redirect("detail_demande", demande_id=demande_id)
-
-    if request.method == "POST":
-        datetime_debut = request.POST.get("date_debut_rendezvous")
-        datetime_fin = request.POST.get("date_fin_rendezvous")
-
-        if datetime_debut >= datetime_fin:
-            messages.error(request, "La date de fin doit être postérieure à la date de début.")
-            return redirect("detail_demande", demande_id=demande_id)
-
-        rendezvous = RendezvousFinalisation.objects.create(
-            demande=demande,
-            analyste=request.user,
-            datetime_debut=datetime_debut,
-            datetime_fin=datetime_fin,
-        )
-        rendezvous.save()
-
-        demande.statut = "en_attente_signature"
-        demande.save()
-
-        email_subject = "Notification de Rendez-vous"
-        email_message = (
-            f"Bonjour {demande.client.nom} {demande.client.prenom},\n\n"
-            f"Suite à votre demande de crédit: {demande.numero_credit} , une entrevue avec un de nos analyste des demandes sera prévu pour :\n"
-            f"- Date et heure de début : {datetime_debut}\n"
-            f"- Date et heure de fin : {datetime_fin}\n\n"
-            f"Merci de bien vouloir respecter cet horaire. Si vous avez des questions, veuillez nous contacter par email ou par téléphone."
-            f"Cordialement,\n"
-        )
-        try:
-            send_mail(
-                email_subject,
-                email_message,
-                settings.EMAIL_HOST_USER,
-                ['henintsoa404@gmail.com'],
-            )
-            messages.success(request, "Rendez-vous créé et email envoyé au client.")
-        except Exception as e:
-            messages.error(request, f"Le rendez-vous a été créé, mais l'envoi de l'email a échoué : {e}")
-
-    return redirect("detail_demande", demande_id=demande_id)
-    
-
 @login_required
 @user_passes_test(is_analyste)    
 def refus_demande(request, demande_id):
@@ -186,76 +151,27 @@ def refus_demande(request, demande_id):
 
     if request.method == 'POST':
         raison_refus = request.POST.get('raisonRefus')
-
-        demande.statut = "refusé"
-        demande.raison_refus = raison_refus
+        print(raison_refus)
+        demande.statut_demande = "rejete"
+        demande.date_derniere_maj = datetime.now()
+        demande.traite_par = request.user
         demande.save()
 
-        email_subject = "Notification de Refus"
-        email_message = (
-            f"Bonjour {demande.client.nom} {demande.client.prenom},\n\n"
-            f"Suite à votre demande de crédit: {demande.numero_credit} , nous vous informons que votre demande a été refusée pour la raison suivante :\n"
-            f"{raison_refus}\n"
-            f"Nous nous excusons pour la gêne occasionnelle et nous vous invitons à nous contacter si vous avez des questions.\n\n"
-            f"Cordialement,\n"
-        )
-        try:
-            send_mail(
-                email_subject,
-                email_message,
-                settings.EMAIL_HOST_USER,
-                ['henintsoa404@gmail.com'],
-            )
-            messages.success(request, "Demande refusée et email envoyé au client.")
-        except Exception as e:
-            messages.error(request, f"Demande refusée, mais l'envoi de l'email a échoué : {e}")
-
-        return redirect('detail_demande', demande_id=demande_id)
-
-    return HttpResponse("Erreur : méthode non autorisée", status=405)
-
+        demande.client.notifierRefus(raison_refus,demande)
+        return redirect('analyste_home')
+    
 @login_required
-@user_passes_test(is_analyste)  
-def resume_demande_rendez_vous(request, rendezvous_id):
-    rendezvous = get_object_or_404(RendezvousFinalisation, id=rendezvous_id)
-    demande = rendezvous.demande
-    client = demande.client
-    scores_dict = demande.get_scoring_client(request.user)
-    if(demande.sous_type_credit.type_credit.isCreditEntrepreneur):
-        scores_dict + demande.get_scoring_inspection
-    return render(request, "analyste_demande/details_scoring_demande.html", {"rendezvous": rendezvous, "client": client, "demande": demande, "scores": scores_dict})
+@user_passes_test(is_analyste)    
+def transmettre_demande(request, demande_id):
+    demande = DemandeCredit.objects.get(id=demande_id)
+    demande.statut_demande = "en_attente_signature"
+    demande.date_derniere_maj = datetime.now()
+    demande.traite_par = request.user
+    demande.save()
+
+    return redirect('analyste_home')   
+    
 
 
-def client_modifier_rendezvous(request, token):
-    rendezvous = get_object_or_404(RendezvousFinalisation, token=token)
-
-    if not rendezvous.is_modifiable():
-        if rendezvous.modification_count >= 1:
-            messages.error(request, "Vous avez déjà modifié ce rendez-vous une fois. Aucune autre modification n'est autorisée.")
-        elif rendezvous.date_debut_rendezvous - timedelta(days=3) <= datetime.now():
-            messages.error(request, "Le rendez-vous est dans moins de 3 jours. Il ne peut pas être modifié.")
-        return redirect("home") 
-
-    if request.method == "POST":
-        new_date_debut = request.POST.get("date_debut_rendezvous")
-        new_date_fin = request.POST.get("date_fin_rendezvous")
-
-        if new_date_debut and new_date_fin:
-            new_date_debut = datetime.fromisoformat(new_date_debut)
-            new_date_fin = datetime.fromisoformat(new_date_fin)
-
-            if new_date_debut >= new_date_fin:
-                messages.error(request, "La date de fin doit être postérieure à la date de début.")
-                return redirect("modify_rendezvous", token=rendezvous.token)
-
-            rendezvous.date_debut_rendezvous = new_date_debut
-            rendezvous.date_fin_rendezvous = new_date_fin
-            rendezvous.modification_count += 1
-            rendezvous.save()
-
-            messages.success(request, "Le rendez-vous a été modifié avec succès.")
-            return redirect("home")
-
-    return render(request, "modify_rendezvous.html", {"rendezvous": rendezvous})
 
     

@@ -1,19 +1,127 @@
-.table {
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.page-title {
+    text-align: left;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #d90000;
+    margin: 40px auto 10px auto;
+    /* centré horizontalement */
+    max-width: 1100px;
+    /* même largeur que .container */
+    padding: 0 20px;
+}
+
+.table-wrapper {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+    overflow-x: auto;
+}
+
+
+/* Style du tableau */
+
+.styled-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
-    font-size: 1rem;
-    text-align: left;
+    font-size: 0.95rem;
+    min-width: 800px;
 }
 
-.table th,
-.table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-}
-
-.table th {
-    background-color: #f4f4f4;
+.styled-table thead tr {
+    background-color: white;
+    color: #d90000;
     font-weight: bold;
-    text-transform: uppercase;
+    border-bottom: 3px solid #d90000;
+    /* Ligne rouge sous l'en-tête */
+}
+
+.styled-table th,
+.styled-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #eeeeee;
+}
+
+.styled-table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.styled-table tbody tr:hover {
+    background-color: #f9f9f9;
+}
+
+
+/* Cellules d'en-tête */
+
+.styled-table thead th {
+    padding: 12px 16px;
+}
+
+
+/* Badges de statut */
+
+.badge {
+    display: inline-block;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 50px;
+    white-space: nowrap;
+}
+
+
+/* Couleurs des statuts */
+
+.badge-en_attente_inspection {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.badge-en_attente_validation {
+    background-color: #ffc107;
+    color: white;
+}
+
+.badge-en_attente_signature {
+    background-color: #6f42c1;
+    color: white;
+}
+
+.badge-approuve {
+    background-color: #28a745;
+    color: white;
+}
+
+.badge-rejete {
+    background-color: #dc3545;
+    color: white;
+}
+
+.badge-termine {
+    background-color: #007bff;
+    color: white;
+}
+
+
+/* Message lorsqu'aucune donnée n’est disponible */
+
+.text-center {
+    text-align: center;
+    color: #999;
+    font-style: italic;
+    padding: 20px 0;
 }

@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="{% static 'css/performance_generale.css' %}">
 
 <div class="chart-container">
-    <h3>1. Montants empruntés vs. Remboursements reçus</h3>
+    <h3>Montants empruntés vs. Remboursements reçus</h3>
     <div id="filters" class="filter">
         <span>
             <label for="year">Année:</label>
@@ -18,7 +18,6 @@
         </span>
 
         <span>
-
             <label for="month">Mois:</label>
             <select id="month">
                 <option value="">Tous les mois</option>
@@ -38,17 +37,23 @@
         </span>
     </div>
     <canvas id="empruntsRemChart"></canvas>
-</div>
-
-<div class="chart-container">
-    <h3>2. Répartition des demandes par statut</h3>
-    <canvas id="statusDistChart"></canvas>
+    
+    <!-- Ajout des totaux -->
+    <div class="totals-container">
+        <div class="total-box">
+            <span class="total-label">Total emprunts:</span>
+            <span id="total-emprunts" class="total-value">0 MGA</span>
+        </div>
+        <div class="total-box">
+            <span class="total-label">Total remboursements:</span>
+            <span id="total-remboursements" class="total-value">0 MGA</span>
+        </div>
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     let empruntsRemChartInstance = null;
-    let statusDistChartInstance = null;
 
     async function fetchPerformanceData() {
         const year = document.getElementById("year").value;
@@ -59,9 +64,9 @@
             if (response.ok) {
                 const data = await response.json();
 
-                if (data.emprunts_vs_remboursements && data.status_distribution) {
+                if (data.emprunts_vs_remboursements) {
                     updateEmpruntsRemChart(data.emprunts_vs_remboursements);
-                    updateStatusDistChart(data.status_distribution);
+                    updateTotals(data.emprunts_vs_remboursements);
                 } else {
                     console.error("Données invalides reçues du serveur.");
                 }
@@ -73,53 +78,50 @@
         }
     }
 
-    function generateLabelsForYearOrMonth(year, month) {
-        if (month) {
-            const daysInMonth = new Date(year, month, 0).getDate();
-            return Array.from({ length: daysInMonth }, (_, i) => `${i + 1}`);
-        } else {
-            return ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
-        }
+    function updateTotals(data) {
+        // Calcul des totaux
+        const totalEmprunts = data.emprunts.reduce((a, b) => a + b, 0);
+        const totalRemboursements = data.remboursements.reduce((a, b) => a + b, 0);
+        
+        // Mise à jour de l'affichage
+        document.getElementById("total-emprunts").textContent = 
+            totalEmprunts.toLocaleString('fr-FR') + ' MGA';
+        document.getElementById("total-remboursements").textContent = 
+            totalRemboursements.toLocaleString('fr-FR') + ' MGA';
     }
 
     function updateEmpruntsRemChart(data) {
-        const year = document.getElementById("year").value || new Date().getFullYear();
+        const year = document.getElementById("year").value;
         const month = document.getElementById("month").value;
     
-        // Génération des labels complets (mois ou jours)
-        const labels = generateLabelsForYearOrMonth(year, month);
-    
-        // Initialisation des montants à zéro pour tous les labels
-        const empruntsMap = Object.fromEntries((data.labels || []).map((label, i) => [label, parseFloat(data.emprunts[i]) || 0]));
-        const remboursementsMap = Object.fromEntries((data.labels || []).map((label, i) => [label, parseFloat(data.remboursements[i]) || 0]));
-    
-        const emprunts = labels.map(label => empruntsMap[label] || 0);
-        const remboursements = labels.map(label => remboursementsMap[label] || 0);
-    
+        const xAxisTitle = month ? "Jours du mois" : 
+                      year ? "Mois de l'année" : "Périodes";
         const ctx = document.getElementById("empruntsRemChart").getContext("2d");
-    
+        
         if (empruntsRemChartInstance) {
             empruntsRemChartInstance.destroy();
         }
-    
+        
         empruntsRemChartInstance = new Chart(ctx, {
             type: "line",
             data: {
-                labels: labels,
+                labels: data.labels || [],
                 datasets: [
                     {
                         label: "Emprunts",
-                        data: emprunts,
+                        data: data.emprunts || [],
                         borderColor: "rgba(229, 0, 5, 1)",
                         backgroundColor: "rgba(229, 0, 5, 0.2)",
-                        tension: 0.4
+                        tension: 0.4,
+                        fill: true
                     },
                     {
                         label: "Remboursements",
-                        data: remboursements,
+                        data: data.remboursements || [],
                         borderColor: "rgba(159, 160, 162, 1)",
                         backgroundColor: "rgba(159, 160, 162, 0.2)",
-                        tension: 0.4
+                        tension: 0.4,
+                        fill: true
                     }
                 ]
             },
@@ -132,59 +134,32 @@
                     title: {
                         display: true,
                         text: "Montants empruntés vs. Remboursements"
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label}: ${context.raw.toLocaleString('fr-FR')} MGA`;
+                            }
+                        }
                     }
                 },
                 scales: {
                     x: {
                         title: {
                             display: true,
-                            text: month ? "Jours du Mois" : "Mois"
+                            text: xAxisTitle
                         }
                     },
                     y: {
                         title: {
                             display: true,
                             text: "Montant (MGA)"
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString('fr-FR');
+                            }
                         }
-                    }
-                }
-            }
-        });
-        console.log("Données pour Chart.js :", {
-            labels: labels,
-            datasets: [
-                { label: "Emprunts", data: emprunts },
-                { label: "Remboursements", data: remboursements }
-            ]
-        });
-        
-    }   
-
-    function updateStatusDistChart(data) {
-        const labels = data.map(d => d.statut_demande || "Inconnu");
-        const values = data.map(d => d.total || 0);
-
-        const ctx = document.getElementById("statusDistChart").getContext("2d");
-
-        if (statusDistChartInstance) {
-            statusDistChartInstance.destroy();
-        }
-
-        statusDistChartInstance = new Chart(ctx, {
-            type: "pie",
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: "Répartition des statuts",
-                    data: values,
-                    backgroundColor: ["#e50005", "#9fa0a2", "#e3e4e6"]
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: "bottom"
                     }
                 }
             }
@@ -196,5 +171,34 @@
     fetchPerformanceData();
 </script>
 
+<style>
+    .totals-container {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #f5f5f5;
+        border-radius: 5px;
+    }
+    
+    .total-box {
+        text-align: center;
+    }
+    
+    .total-label {
+        display: block;
+        font-weight: bold;
+        color: #333;
+    }
+    
+    .total-value {
+        font-size: 1.2em;
+        color: #e50005;
+    }
+    
+    .total-value:nth-child(2) {
+        color: #9fa0a2;
+    }
+</style>
 
 {% endblock %}

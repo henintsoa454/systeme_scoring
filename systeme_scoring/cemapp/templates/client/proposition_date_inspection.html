@@ -1,27 +1,30 @@
 {% block content %}
 {% load static %}
+
+
+<link rel="stylesheet" href="{% static 'fontawesome-5/css/all.css' %}">
+
 <div class="rendezvous-container">
-    <!-- Section Informations Rendez-vous -->
     <div class="rendezvous-info">
         <div class="info-header">
             <h2>Votre Rendez-vous Actuel</h2>
-            <div class="info-icon">📅</div>
+            <div class="info-icon"><i class="far fa-calendar-alt"></i></div>
         </div>
         
         <div class="info-card">
             <div class="info-item">
                 <span class="info-label">Date & Heure</span>
-                <span class="info-value">{{ rendezvous.date_rendezvous|date:"d F Y à H:i" }}</span>
+                <span class="info-value"><i class="far fa-clock"></i> {{ rendezvous.date_rendezvous|date:"d F Y à H:i" }}</span>
             </div>
             
             <div class="info-item">
                 <span class="info-label">Agent</span>
-                <span class="info-value">{{ rendezvous.agent_recouvrement.get_full_name }}</span>
+                <span class="info-value"><i class="fas fa-user-tie"></i> {{ rendezvous.agent_recouvrement.nom }} {{ rendezvous.agent_recouvrement.prenom }}</span>
             </div>
             
             <div class="info-item">
                 <span class="info-label">Référence</span>
-                <span class="info-value">#{{ rendezvous.demande.numero_credit }}</span>
+                <span class="info-value"><i class="fas fa-hashtag"></i> #{{ rendezvous.demande.numero_credit }}</span>
             </div>
         </div>
     </div>
@@ -30,7 +33,7 @@
     <div class="rendezvous-form">
         <div class="form-header">
             <h2>Proposer un Changement</h2>
-            <div class="form-icon">✏️</div>
+            <div class="form-icon"><i class="far fa-edit"></i></div>
         </div>
         
         <form method="post" class="needs-validation" novalidate>
@@ -38,30 +41,39 @@
             
             <div class="form-group">
                 <label for="date_proposee" class="form-label">
-                    <i class="icon">📅</i> Nouvelle Date Suggérée
+                    <i class="fas fa-calendar-day"></i> Nouvelle Date Suggérée
                 </label>
-                <input type="datetime-local" class="form-control" id="date_proposee" 
-                       name="date_proposee" required>
+                <div class="input-with-icon">
+                    <i class="fas fa-calendar-alt input-icon"></i>
+                    <input type="datetime-local" class="form-control" id="date_proposee" 
+                           name="date_proposee" required>
+                </div>
                 <div class="invalid-feedback">
-                    <i class="icon">⚠️</i> Veuillez sélectionner une date valide
+                    <i class="fas fa-exclamation-circle"></i> Veuillez sélectionner une date valide
                 </div>
             </div>
             
             <div class="form-group">
                 <label for="raison_proposition" class="form-label">
-                    <i class="icon">📝</i> Motif de Changement
+                    <i class="fas fa-pen-fancy"></i> Motif de Changement
                 </label>
-                <textarea class="form-control" id="raison_proposition" 
-                          name="raison_proposition" rows="4" required
-                          placeholder="Expliquez pourquoi vous souhaitez modifier ce rendez-vous..."></textarea>
+                <div class="textarea-with-icon">
+                    <i class="fas fa-comment-dots textarea-icon"></i>
+                    <textarea class="form-control" id="raison_proposition" 
+                              name="raison_proposition" rows="4" required
+                              placeholder="Expliquez pourquoi vous souhaitez modifier ce rendez-vous..."></textarea>
+                </div>
                 <div class="invalid-feedback">
-                    <i class="icon">⚠️</i> Veuillez expliquer votre demande
+                    <i class="fas fa-exclamation-circle"></i> Veuillez expliquer votre demande
                 </div>
             </div>
             
             <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="fermerFenetre()">
+                    <i class="fas fa-times"></i> Annuler
+                </button>
                 <button type="submit" class="btn btn-primary">
-                    <i class="icon"></i> Envoyer la Proposition
+                    <i class="fas fa-paper-plane"></i> Envoyer la Proposition
                 </button>
             </div>
         </form>
@@ -69,9 +81,15 @@
 </div>
 
 <style>
+:root {
+    --main-red: #c40004;
+    --main-grey: #6c757d;
+}
+
 .rendezvous-container {
     display: flex;
     min-height: 100vh;
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
 }
 
 .rendezvous-info {
@@ -107,8 +125,8 @@
 }
 
 .info-icon, .form-icon {
-    font-size: 2.5rem;
-    opacity: 0.1;
+    font-size: 1.8rem;
+    color: rgba(0,0,0,0.1);
     position: absolute;
     right: 0;
     top: 0;
@@ -126,6 +144,8 @@
     margin-bottom: 1.8rem;
     padding-bottom: 1.8rem;
     border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    flex-direction: column;
 }
 
 .info-item:last-child {
@@ -135,7 +155,6 @@
 }
 
 .info-label {
-    display: block;
     color: var(--main-grey);
     font-weight: 600;
     font-size: 0.9rem;
@@ -148,16 +167,15 @@
     font-size: 1.2rem;
     color: #333;
     font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.info-note {
-    margin-top: 2.5rem;
-    padding: 1.2rem;
-    background: #f8f9fa;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    color: var(--main-grey);
-    border-left: 3px solid var(--main-red);
+.info-value i {
+    color: var(--main-red);
+    width: 20px;
+    text-align: center;
 }
 
 /* Form Styles */
@@ -172,20 +190,46 @@
     font-weight: 600;
     margin-bottom: 0.8rem;
     font-size: 1rem;
+    gap: 10px;
 }
 
-.form-label .icon {
-    margin-right: 0.7rem;
-    font-size: 1.2rem;
+.form-label i {
+    width: 20px;
+    text-align: center;
+    color: var(--main-red);
+}
+
+.input-with-icon, .textarea-with-icon {
+    position: relative;
+}
+
+.input-icon, .textarea-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--main-grey);
+    z-index: 2;
+}
+
+.textarea-icon {
+    top: 20px;
+    transform: none;
 }
 
 .form-control {
     width: 100%;
-    padding: 1rem;
+    padding: 1rem 1rem 1rem 3rem;
     border: 2px solid #e9ecef;
     border-radius: 8px;
     font-size: 1rem;
     transition: all 0.3s ease;
+}
+
+textarea.form-control {
+    padding-top: 1.5rem;
+    min-height: 150px;
+    resize: vertical;
 }
 
 .form-control:focus {
@@ -194,21 +238,13 @@
     outline: none;
 }
 
-textarea.form-control {
-    min-height: 150px;
-    resize: vertical;
-}
-
 .invalid-feedback {
     display: flex;
     align-items: center;
     margin-top: 0.5rem;
     color: #dc3545;
     font-size: 0.9rem;
-}
-
-.invalid-feedback .icon {
-    margin-right: 0.5rem;
+    gap: 8px;
 }
 
 /* Button Styles */
@@ -227,10 +263,12 @@ textarea.form-control {
     justify-content: center;
     transition: all 0.3s ease;
     border: none;
+    cursor: pointer;
+    gap: 8px;
 }
 
-.btn .icon {
-    margin-right: 0.5rem;
+.btn i {
+    font-size: 0.9em;
 }
 
 .btn-secondary {
@@ -239,12 +277,17 @@ textarea.form-control {
 }
 
 .btn-secondary:hover {
-    background-color: #7e8082;
+    background-color: #5a6268;
     transform: translateY(-2px);
 }
 
 .btn-primary {
-    background-color: #c40004;
+    background-color: var(--main-red);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #a30003;
     transform: translateY(-2px);
 }
 

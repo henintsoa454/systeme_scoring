@@ -1,99 +1,188 @@
-/* Conteneur principal */
+/* Base Styles */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f7fa;
+    color: #333;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
 
 .container {
-    margin: 0 auto;
-    max-width: 900px;
-    padding: 30px;
-    background-color: #f8f9fa;
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: #fff;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 }
 
-
-/* Titre principal */
-
-.container h1 {
-    font-size: 32px;
-    color: #343a40;
+h1 {
+    color: #e50005;
     text-align: center;
-    margin-bottom: 20px;
-    border-bottom: 2px solid #17a2b8;
-    display: inline-block;
-    padding-bottom: 10px;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
 }
 
 
-/* Sections */
+/* Form Sections */
 
 .form-section {
-    margin-bottom: 20px;
-    padding: 20px;
-    border: 1px solid #e0e0e0;
+    background-color: #f9f9f9;
+    padding: 25px;
+    margin-bottom: 30px;
     border-radius: 8px;
-    background-color: #ffffff;
+    border-left: 4px solid #e50005;
 }
-
-
-/* Titre des sections */
 
 .form-section h2 {
-    font-size: 20px;
-    margin-bottom: 15px;
-    color: #17a2b8;
+    color: #e50005;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.4rem;
 }
 
 
-/* Labels */
+/* Form Elements */
 
 label {
-    font-weight: bold;
     display: block;
     margin-bottom: 8px;
-    color: #495057;
+    font-weight: 600;
+    color: #444;
 }
 
-
-/* Inputs et textarea */
-
-input,
-select,
-textarea {
+input[type="text"],
+input[type="date"],
+input[type="email"],
+input[type="number"],
+textarea,
+select {
     width: 100%;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ced4da;
-    border-radius: 5px;
-    font-size: 16px;
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: all 0.3s;
+    box-sizing: border-box;
+}
+
+input[type="text"]:focus,
+input[type="date"]:focus,
+input[type="email"]:focus,
+input[type="number"]:focus,
+textarea:focus,
+select:focus {
+    border-color: #e50005;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(229, 0, 5, 0.1);
+}
+
+textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 16px;
 }
 
 
-/* Boutons */
+/* Button Styles */
 
-.button-container button {
-    background-color: #17a2b8;
-    color: #fff;
-    padding: 10px 15px;
+.button-container {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.btn-save {
+    background-color: #e50005;
+    color: white;
     border: none;
-    border-radius: 5px;
+    padding: 12px 30px;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-weight: 600;
     cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-    transition: background-color 0.3s;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
-.button-container button:hover {
-    background-color: #138496;
+.btn-save:hover {
+    background-color: #c40004;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 
 /* Responsive Design */
 
 @media (max-width: 768px) {
-    .container-modify-client {
+    .container {
+        padding: 15px;
+        margin: 15px;
+    }
+    .form-section {
         padding: 15px;
     }
-    .form-section h2 {
-        font-size: 18px;
+    input[type="text"],
+    input[type="date"],
+    input[type="email"],
+    input[type="number"],
+    textarea,
+    select {
+        padding: 10px 12px;
     }
+}
+
+
+/* Grid Layout for Financial Section */
+
+@media (min-width: 992px) {
+    .form-section:nth-child(3) {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    .form-section:nth-child(3) h2 {
+        grid-column: 1 / -1;
+    }
+    .form-section:nth-child(3) label {
+        margin-bottom: 5px;
+    }
+    .form-section:nth-child(3) input,
+    .form-section:nth-child(3) textarea {
+        margin-bottom: 15px;
+    }
+}
+
+
+/* Special Styles for Textareas */
+
+.form-section:nth-child(3) textarea {
+    min-height: 120px;
+}
+
+
+/* Required Field Indicator */
+
+label[required]::after {
+    content: " *";
+    color: #e50005;
+}
+
+
+/* Disabled Input Style */
+
+input:disabled {
+    background-color: #f0f0f0;
+    cursor: not-allowed;
 }

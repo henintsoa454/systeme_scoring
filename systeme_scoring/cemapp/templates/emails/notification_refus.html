@@ -1,0 +1,103 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Décision concernant votre demande de crédit</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        .header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eeeeee;
+            margin-bottom: 25px;
+        }
+        .header h2 {
+            color: #d32f2f;
+            margin: 0;
+            font-size: 24px;
+        }
+        .logo {
+            max-width: 150px;
+            margin-bottom: 15px;
+        }
+        .content {
+            padding: 0 10px;
+        }
+        .highlight {
+            background-color: #fff9e6;
+            padding: 15px;
+            border-left: 4px solid #ffc107;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eeeeee;
+            font-size: 12px;
+            color: #777777;
+            text-align: center;
+        }
+        .signature {
+            margin-top: 30px;
+            font-style: italic;
+            color: #555555;
+        }
+        .button {
+            display: inline-block;
+            margin: 20px 0;
+            padding: 10px 20px;
+            background-color: #d32f2f;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .button:hover {
+            background-color: #b71c1c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Décision concernant votre demande de crédit</h2>
+        </div>
+        
+        <div class="content">
+            <p>Bonjour {{ demande.client.nom }} {{ demande.client.prenom }},</p>
+            
+            <p>Nous vous remercions d'avoir choisi notre établissement pour votre projet et d'avoir pris le temps de constituer votre dossier de demande de crédit n°<strong>{{ demande.numero_credit }}</strong>.</p>
+            
+            <div class="highlight">
+                <p>Après une étude approfondie de votre dossier, nous regrettons de ne pas pouvoir donner suite favorable à votre demande pour le motif suivant :</p>
+                <p><strong>{{ raisonRefus }}</strong></p>
+            </div>
+            
+            <p>Nous comprenons que cette décision puisse être décevante et tenons à vous assurer qu'elle résulte d'une analyse rigoureuse basée sur nos critères d'octroi en vigueur.</p>
+    
+            
+        </div>
+        
+        <div class="footer">
+            <p>Cet email vous a été envoyé automatiquement, merci de ne pas y répondre directement.</p>
+            <p>© 2025 Caisse d'Epargne de Madagascar - Tous droits réservés<br>
+        </div>
+    </div>
+</body>
+</html>

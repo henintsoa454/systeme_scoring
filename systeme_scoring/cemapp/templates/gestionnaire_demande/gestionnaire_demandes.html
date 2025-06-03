@@ -3,20 +3,20 @@
 {% load static %}
 
 <link rel="stylesheet" href="{% static 'css/gestionnaire_demandes.css' %}">
+<link rel="stylesheet" href="{% static 'css/formulaire_demande.css' %}">
+<div class="page-wrapper">
+
+<div class="header-container">
+    <h1 class="page-title">Gestion des Demandes</h1>
+    <div class="action-bar">
+        <input type="text" id="search" class="form-control" placeholder="Recherchez par client, numéro de crédit, ou statut...">
+        <button id="addDemandeButton">Ajouter une Demande</button>
+    </div>
+</div>
 
 <div class="container">
-    <h2>Gestion des Demandes</h2>
-
-    <div class="text-right mb-3">
-        <a href="{% url 'nouvelledemande' %}" class="btn btn-success">Nouvelle Demande</a>
-    </div>
-
-    <div class="form-group">
-        <label for="search">Rechercher une demande :</label>
-        <input type="text" id="search" class="form-control" placeholder="Recherchez par client, numéro de crédit, ou statut...">
-    </div>
-
-    <table class="table table-striped mt-3">
+    <div class="table-wrapper">
+    <table class="styled-table">
         <thead>
             <tr>
                 <th>Numéro de Crédit</th>
@@ -28,9 +28,9 @@
                 <th>Actions</th>
             </tr>
         </thead>
-        <tbody id="table-content">
+        <tbody>
             {% for demande in demandes %}
-            <tr>
+            <tr onclick="redirectToDemande({{ demande.id }})" style="cursor: pointer;">
                 <td>{{ demande.numero_credit }}</td>
                 <td>{{ demande.client.nom }} {{ demande.client.prenom }}</td>
                 <td>{{ demande.sous_type_credit.nom }}</td>
@@ -42,18 +42,108 @@
                         <a href="{% url 'modifiedemande' demande.id %}" class="btn btn-primary btn-sm">Modifier</a>
                     {% elif demande.statut_demande == 'approuve' %}
                         <a href="{% url 'payementdemande' demande.id %}" class="btn btn-success btn-sm">Effectuer le paiement</a>
-                    {% elif demande.statut_demande == 'en_attente_signature' or demande.statut_demande == 'refuse' %}
                     {% else %}
                         <span class="text-muted">Aucune action disponible</span>
                     {% endif %}
                 </td>
             </tr>
             {% empty %}
-            <tr>
-                <td colspan="7" class="text-center">Aucune demande trouvée.</td>
-            </tr>
+            <tr><td colspan="7" class="text-center">Aucune demande trouvée.</td></tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+</div>
+</div>
+
+<!-- Modal -->
+<div id="demandeModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('demandeModal')">&times;</span>
+        <h2>Nouvelle Demande de Crédit</h2>
+        <form method="post" action="{% url 'nouvelledemande' %}">
+            {% csrf_token %}
+            
+            <!-- Client -->
+            <div class="mb-3 client-search-container">
+                <label for="modalClient" class="form-label">Client</label>
+                <input type="text" id="modalClientSearch" class="form-control" placeholder="Rechercher un client...">
+                <select id="modalClient" name="client" class="form-select" required>
+                    {% for client in clients %}
+                    <option value="{{ client.id }}">{{ client.nom }} {{ client.prenom }} ({{ client.n_cin }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Sélection du type de crédit -->
+            <div class="mb-3">
+                <label for="modalTypeCredit" class="form-label">Type de Crédit</label>
+                <select id="modalTypeCredit" class="form-select">
+                    <option value="" selected disabled>-- Sélectionner un type de crédit --</option>
+                    {% for type_credit in types_credit %}
+                    <option value="{{ type_credit.id }}">{{ type_credit.nom }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Sélection du sous-type de crédit -->
+            <div class="mb-3">
+                <label for="modalSousTypeCredit" class="form-label">Sous-Type de Crédit</label>
+                <select id="modalSousTypeCredit" name="sous_type_credit" class="form-select" disabled>
+                    <option value="" selected disabled>-- Sélectionner un sous-type de crédit --</option>
+                </select>
+                <small id="modalCreditLimits" class="form-text text-muted"></small>
+            </div>
+
+            <!-- Durée du prêt -->
+            <div class="mb-3">
+                <label for="modalDuree" class="form-label">Durée (en mois)</label>
+                <input type="number" id="modalDuree" name="duree" class="form-control" placeholder="Ex : 24" required>
+            </div>
+
+            <!-- Montant total -->
+            <div class="mb-3">
+                <label for="modalMontantTotal" class="form-label">Montant Total</label>
+                <input type="number" step="0.01" id="modalMontantTotal" name="montant_total" class="form-control" placeholder="Ex : 50000.00" required>
+            </div>
+
+            <!-- Motif du crédit -->
+            <div class="mb-3">
+                <label for="modalMotifCredit" class="form-label">Motif du Crédit</label>
+                <textarea id="modalMotifCredit" name="motif_credit" class="form-control" rows="4" placeholder="Décrivez le motif de cette demande"></textarea>
+            </div>
+
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                    <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <div class="d-flex justify-content-between modal-actions">
+                <button type="button" onclick="closeModal('demandeModal')" class="btn btn-secondary">Annuler</button>
+                <button type="submit" class="btn btn-primary">Créer la Demande</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="{% static 'js/demande_credit.js' %}"></script>
+<script>
+    function redirectToDemande(demandeId) {
+        window.location.href = `/gestionnairedemande/modifier/${demandeId}/`;
+    }
+    document.getElementById("addDemandeButton").addEventListener("click", function() {
+        document.getElementById("demandeModal").style.display = "block";
+        document.body.classList.add("modal-open");
+    });
+
+    function closeModal(id) {
+        document.getElementById(id).style.display = "none";
+        document.body.classList.remove("modal-open");
+    }
+</script>
+
+
 {% endblock %}

@@ -5,40 +5,48 @@
 <link rel="stylesheet" href="{% static 'css/gestionnaire_clients.css' %}">
 <link rel="stylesheet" href="{% static 'css/formulaire_client.css' %}">
 
+<div class="page-wrapper">
+    <div class="header-container">
+        <h1 class="page-title">Gestion des clients</h1>
+        <div class="action-bar">
+            <input 
+                type="text" 
+                id="searchInput" 
+                placeholder="Rechercher par nom, prénom ou numéro CIN,..."
+                data-url="{% url 'rechercheclients' %}"
+            >
+            <button id="addClientButton">Ajouter un client</button>
+        </div>
+    </div>
 
-<div class="action-bar">
-    <button id="addClientButton" onclick="window.location.href='#'">Ajouter un client</button>
-</div>
-<form method="GET" id="searchForm">
-    <input
-    type="text"
-    id="searchInput"
-    placeholder="Rechercher un client par nom ou prénom"
-    data-url="{% url 'rechercheclients' %}" 
-    >
-</form>
-<table id="clientsTable">
-    <thead>
-        <tr>
-            <th>Nom</th>
-            <th>Prénom</th>
-            <th>Date de naissance</th>
-            <th>N° CIN</th>
-            <th>Email</th>
-        </tr>
-    </thead>
-    <tbody id="clientList">
-        {% for client in clients %}
-        <tr onclick="redirectToEdit({{ client.id }})" style="cursor: pointer;">
-                <td>{{ client.nom }}</td>
-                <td>{{ client.prenom }}</td>
-                <td>{{ client.date_naissance }}</td>
-                <td>{{ client.n_cin }}</td>
-                <td>{{ client.email }}</td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
+    <div class="container">
+        <div class="table-wrapper">
+            <table class="styled-table" id="clientsTable">
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Date de naissance</th>
+                        <th>N° CIN</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody id="clientList">
+                    {% for client in clients %}
+                    <tr onclick="redirectToEdit({{ client.id }})" style="cursor: pointer;">
+                        <td>{{ client.nom }}</td>
+                        <td>{{ client.prenom }}</td>
+                        <td>{{ client.date_naissance }}</td>
+                        <td>{{ client.n_cin }}</td>
+                        <td>{{ client.email }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div> 
+
 <div id="clientModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeModal('clientModal')">&times;</span>

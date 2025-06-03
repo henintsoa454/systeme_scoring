@@ -2,6 +2,10 @@ from django.db import models
 from django.db.models import Sum, F
 from django.core.exceptions import ValidationError
 from datetime import date
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.conf import settings
 
 class Client(models.Model):
     STATUT_FAMILIAL_CHOICES = [
@@ -73,7 +77,6 @@ class Client(models.Model):
     type_contrat = models.CharField(max_length=50, choices=TYPE_CONTRAT_CHOICES, blank=True, null=True)
     valeur_actifs = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
     historique_paiement = models.TextField(blank=True, null=True)
-    isBlackList = models.BooleanField(default=False)
 
     def clean(self):
         if self.situation_professionnelle == 'sans_emploi':
@@ -124,3 +127,18 @@ class Client(models.Model):
             "taux_retards": round(taux_retards, 2),
             "retard_moyen": round(retard_moyen, 2) if remboursements_en_retard > 0 else "N/A",
         }
+        
+    def notifierRefus(self,raison_refus,demande):
+        subject = f"Refus de votre demande de crédit : {demande.numero_credit}"
+        html_message = render_to_string('emails/notification_refus.html', {
+            'raisonRefus': raison_refus,
+            'demande': demande
+        })
+        plain_message = strip_tags(html_message)
+        send_mail(
+            subject,
+            plain_message,
+            settings.DEFAULT_FROM_EMAIL,
+            [demande.client.email],
+            html_message=html_message
+        )

@@ -1,115 +1,261 @@
-/* Formulaire de recherche */
+/* Wrapper central */
 
-#searchForm {
-    margin-bottom: 1.5rem;
-    display: flex;
-    justify-content: center;
+.page-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
 }
+
+
+/* Titre */
+
+.page-title {
+    color: #e50005;
+    align-self: flex-start;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+
+/* Conteneur titre + actions alignés */
+
+.header-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.action-bar {
+    display: flex;
+    align-items: center;
+    /* Alignement vertical au centre */
+    justify-content: space-between;
+    /* Espacement entre les éléments */
+    gap: 15px;
+    /* Espacement entre la recherche et le bouton */
+    width: 100%;
+}
+
+
+/* Barre de recherche */
 
 #searchInput {
-    width: 100%;
-    max-width: 400px;
-    padding: 0.5em;
-    font-size: 1em;
-    border: 1px solid #9fa0a2;
-    border-radius: 4px;
-    background-color: #e3e4e6;
-    color: #333;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-#searchInput::placeholder {
-    color: #9fa0a2;
+    flex: 1;
+    min-width: 250px;
+    max-width: 600px;
+    padding: 10px 12px;
+    font-size: 16px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    transition: all 0.3s ease;
 }
 
 #searchInput:focus {
     border-color: #e50005;
-    box-shadow: 0px 0px 8px rgba(229, 0, 5, 0.3);
     outline: none;
+    box-shadow: 0 0 0 2px rgba(229, 0, 5, 0.1);
 }
 
 
-/* Tableau des clients */
-
-#clientsTable {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 1rem;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    background-color: white;
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-#clientsTable th,
-#clientsTable td {
-    padding: 0.75em 1em;
-    text-align: left;
-    border-bottom: 1px solid #e3e4e6;
-    font-size: 0.95em;
-}
-
-#clientsTable th {
-    background-color: white;
-    color: #e50005;
-    font-weight: bold;
-    text-transform: uppercase;
-    border-color: #e50005;
-}
-
-#clientsTable tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-#clientsTable tr:hover {
-    background-color: #e3e4e6;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-#clientsTable td {
-    color: #333;
-}
-
-
-/* Barre d'action (ajout de client) */
-
-.action-bar {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 1rem;
-}
+/* Bouton ajout */
 
 #addClientButton {
     background-color: #e50005;
     color: white;
-    padding: 0.6em 1.2em;
     border: none;
-    border-radius: 4px;
-    font-size: 1em;
+    border-radius: 6px;
+    padding: 10px 15px;
+    /* Padding équilibré */
+    font-size: 16px;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    white-space: nowrap;
+    width: auto;
+    /* Largeur automatique */
+    min-width: 150px;
+    /* Largeur minimale */
+    text-align: center;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+    /* Empêche le rétrécissement */
 }
 
 #addClientButton:hover {
-    background-color: #b40004;
-    transform: scale(1.05);
+    background-color: #c40004;
 }
 
 
-/* Général */
+/* Tableau */
 
-body {
-    font-family: Arial, sans-serif;
-    color: #333;
-    background-color: #e3e4e6;
-    margin: 0;
-    padding: 0;
-}
-
-.container {
-    padding: 20px;
-    background-color: #fff;
+.table-wrapper {
+    overflow-x: auto;
+    background: white;
     border-radius: 8px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 700px;
+}
+
+.styled-table th,
+.styled-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    vertical-align: middle;
+}
+
+.styled-table thead {
+    border-bottom: 2px solid #e50005;
+}
+
+.styled-table th {
+    color: #e50005;
+    font-weight: bold;
+}
+
+.styled-table tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+
+/* Modal */
+
+#clientModal {
+    display: none;
+    position: fixed;
+    z-index: 1050;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 4% auto;
+    padding: 20px 30px;
+    border-radius: 12px;
+    width: 480px;
+    max-width: 95%;
+    position: relative;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.modal-content h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #333;
+    font-size: 1.6rem;
+}
+
+.close {
+    position: absolute;
+    top: 18px;
+    right: 25px;
+    font-size: 28px;
+    color: #666;
+    cursor: pointer;
+}
+
+
+/* Formulaire dans le modal */
+
+.modal-content form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.modal-content label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #444;
+}
+
+.modal-content input,
+.modal-content select,
+.modal-content textarea {
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.modal-content input:focus,
+.modal-content select:focus,
+.modal-content textarea:focus {
+    outline: none;
+    border-color: #e50005;
+    box-shadow: 0 0 0 2px rgba(229, 0, 5, 0.2);
+}
+
+
+/* Sections du formulaire */
+
+.form-section {
+    margin-bottom: 10px;
+}
+
+
+/* Bouton de sauvegarde */
+
+.btn-save {
+    background-color: #e50005;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 5px;
+    display: block;
+    margin-top: 15px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-save:hover {
+    background-color: #c40004;
+}
+
+
+/* Flou sur le fond quand le modal est ouvert */
+
+body.modal-open .page-wrapper {
+    filter: blur(5px);
+    pointer-events: none;
+    user-select: none;
+    transition: filter 0.3s ease;
+}
+
+
+/* Responsive */
+
+@media screen and (max-width: 768px) {
+    .action-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    #addClientButton,
+    #searchInput {
+        width: 100%;
+    }
+    .styled-table {
+        font-size: 14px;
+    }
+    .modal-content {
+        margin: 10% auto;
+        padding: 15px 20px;
+    }
 }

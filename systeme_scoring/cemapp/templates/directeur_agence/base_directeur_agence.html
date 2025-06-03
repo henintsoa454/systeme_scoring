@@ -16,13 +16,21 @@
             <span class="sidebar-title">Directeur Agence</span>
         </div>
         <nav>
-            <a href="{% url 'directeur_home' %}" class="nav-item"><i class="fa fa-home nav-icon"></i><span class="nav-text">Accueil</span></a>
-            <!-- Dashboard Global -->
+            <div class="nav-group">
+                <a href="{% url 'directeur_home' %}" class="nav-item"><i class="fa fa-home nav-icon"></i><span class="nav-text">Accueil</span></a>
+            </div>
+            <div class="nav-group">
+                <a href="#" class="nav-item"><i class="fa fa-hourglass-half nav-icon"></i><span class="nav-text">Approbation demande</span></a>
+                <div class="nav-submenu">
+                    <a href="{% url 'listeattente' %}" class="nav-subitem"><i class="fas fa-list-ol"></i>Liste d'attente</a>
+                    <a href="{% url 'calendrierfinalisation' %}" class="nav-subitem"><i class="fas fa-calendar nav-icon"></i>Rendez vous d'approbation</a>
+                </div>
+            </div>
             <div class="nav-group">
                 <a href="#" class="nav-item"><i class="fa fa-chart-bar nav-icon"></i><span class="nav-text">Tableau de bord</span></a>
                 <div class="nav-submenu">
-                    <a href="{% url 'performancegenerale' %}" class="nav-subitem"><i class="fa fa-chart-line"></i>Performances globales</a>
-                    <a href="{% url 'performanceemployes' %}" class="nav-subitem"><i class="fa fa-signal"></i>Performance des employés</a>
+                    <a href="{% url 'performancegenerale' %}" class="nav-subitem"><i class="fa fa-chart-line"></i>Suivi des empreints</a>
+                    <a href="{% url 'performanceemployes' %}" class="nav-subitem"><i class="fa fa-signal"></i>Répartition des demandes</a>
                 </div>
             </div>
 
@@ -30,6 +38,7 @@
             <div class="nav-group">
                 <a href="{% url 'gestionemployes' %}" class="nav-item"><i class="fa fa-user nav-icon"></i><span class="nav-text">Gestion des employés</span></a>
             </div>
+
 
             <!-- Déconnexion -->
             <a href="{% url 'logout' %}" class="nav-item"><i class="fa fa-sign-out-alt nav-icon"></i><span class="nav-text">Déconnexion</span></a>

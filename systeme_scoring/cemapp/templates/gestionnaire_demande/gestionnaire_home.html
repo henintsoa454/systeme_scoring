@@ -4,38 +4,44 @@
 
 <link rel="stylesheet" href="{% static 'css/gestionnaire_home.css' %}">
 
-<h1>Demandes récentes</h1>
+<h1 class="page-title">Demandes récentes</h1>
 
 <div class="container">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Numéro Crédit</th>
-                <th>Client</th>
-                <th>Offre de Crédit</th>
-                <th>Montant du Prêt</th>
-                <th>Statut</th>
-                <th>Date de Demande</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for demande in demandes %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ demande.numero_credit }}</td>
-                <td>{{ demande.client.nom }} {{ demande.client.prenom }}</td>
-                <td>{{ demande.sous_type_credit.nom }}</td>
-                <td>{{ demande.montant_total }}</td>
-                <td>{{ demande.get_statut_demande_display }}</td>
-                <td>{{ demande.date_demande }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="7" class="text-center">Aucune demande trouvée.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="table-wrapper">
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Numéro Crédit</th>
+                    <th>Client</th>
+                    <th>Offre de Crédit</th>
+                    <th>Montant du Prêt</th>
+                    <th>Statut</th>
+                    <th>Date de Demande</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for demande in demandes %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ demande.numero_credit }}</td>
+                    <td>{{ demande.client.nom }} {{ demande.client.prenom }}</td>
+                    <td>{{ demande.sous_type_credit.nom }}</td>
+                    <td>{{ demande.montant_total|floatformat:0 }} MGA</td>
+                    <td>
+                        <span class="badge badge-{{ demande.statut_demande }}">
+                            {{ demande.get_statut_demande_display }}
+                        </span>
+                    </td>
+                    <td>{{ demande.date_demande }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center">Aucune demande trouvée.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}

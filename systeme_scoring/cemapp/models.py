@@ -1,16 +1,12 @@
 from django.db import models
-
 from cemapp.models_classes.custom_user import CustomUser
 from cemapp.models_classes.client import Client
 from cemapp.models_classes.type_credit import TypeCredit
 from cemapp.models_classes.demande_credit import DemandeCredit
 from cemapp.models_classes.remboursement_credit import RemboursementCredit
 from cemapp.models_classes.evaluation_credit import EvaluationCredit
-from cemapp.models_classes.document_credit import DocumentCredit
 from cemapp.models_classes.sous_types_credit import SousTypeCredit
 from cemapp.models_classes.agence import Agence
-from cemapp.models_classes.rendezvous_finalisation import RendezvousFinalisation
+from cemapp.models_classes.rendezvous_directeur import RendezvousDirecteur
 from cemapp.models_classes.inspection_environnement import InspectionEnvironnement
-from cemapp.models_classes.demande_report_echeance import DemandeReportEcheance
-from cemapp.models_classes.message import Messagerie
 from cemapp.models_classes.rendezvous_inspection import RendezvousInspection

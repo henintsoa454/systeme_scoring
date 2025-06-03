@@ -25,7 +25,7 @@ class InspectionEnvironnement(models.Model):
     NIVEAU_CONCURRENCE_CHOICES = [
         ('faible', 'Faible'),
         ('moyen', 'Moyen'),
-        ('eleve', 'Élevé'),
+        ('fort', 'Fort'),
     ]
     
     nom_entreprise = models.CharField(max_length=255)

@@ -36,18 +36,6 @@ class RemboursementCredit(models.Model):
         if self.somme_paye > self.montant_restant():
             raise ValueError("Le montant payé ne peut pas dépasser le montant restant.")
 
-    def save(self, *args, **kwargs):
-        # Calcul de la date d'échéance
-        self.date_echeance = self.demande.date_creation + timedelta(days=30 * self.numero_paiement)
-        # Mise à jour du statut
-        if self.date_paiement > self.date_echeance:
-            self.statut = 'en_retard'
-        elif self.type_paiement == 'anticipe':
-            self.statut = 'anticipé'
-        else:
-            self.statut = 'payé'
-        super().save(*args, **kwargs)
-
     def montant_restant(self):
         total_paye = self.demande.remboursements.aggregate(models.Sum('somme_paye'))['somme_paye__sum'] or 0
         return self.demande.montant_total - total_paye

@@ -1,0 +1,55 @@
+{% extends base_template %}
+{% block content %}
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/calendrier_inspection.css' %}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
+
+<div class="main-content">
+    <h1>Calendrier de finalisation</h1>
+    <div id="calendar"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const calendarEl = document.getElementById('calendar');
+    
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        events: {
+            url: "{% url 'api_finalisation' %}",  // Vérifiez le nom de l'URL
+            method: 'GET',
+            extraParams: {
+                // Ajoutez des paramètres si nécessaire
+            },
+            failure: function() {
+                alert('Erreur lors du chargement des événements');
+            }
+        },
+        eventClick: function(info) {
+            console.log("Event data:", info.event);
+            const demandeId = info.event.extendedProps.demandeId;
+            
+            if (!demandeId) {
+                alert("Cet événement n'est pas lié à une demande");
+                return;
+            }
+            
+            // Utilisation du tag URL Django pour plus de fiabilité
+            window.location.href = "{% url 'resumedemande' 0 %}".replace('0', demandeId);
+            
+            info.jsEvent.preventDefault();
+        },
+        eventDidMount: function(info) {
+            if (info.event.extendedProps.statut === 'urgent') {
+                info.el.style.backgroundColor = '#ff6b6b';
+                info.el.style.borderColor = '#ff6b6b';
+            }
+        }
+    });
+    
+    calendar.render();
+});
+</script>
+{% endblock %}

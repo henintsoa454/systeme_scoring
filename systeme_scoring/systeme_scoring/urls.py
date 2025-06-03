@@ -8,6 +8,7 @@ urlpatterns = [
     path('', baseviews.user_login, name='login'),
     path('logout/', baseviews.user_logout, name='logout'),
     path('proposer-date/<uuid:token>/', baseviews.proposer_date, name='proposer_date'),
+    path('proposer-date-finalisation/<uuid:token>/', baseviews.proposer_date_finalisation, name='proposer_date_finalisation'),
     #admin
     path('admin/', admin_views.admin_home, name='admin_home'),
     #directeur_agence
@@ -16,14 +17,23 @@ urlpatterns = [
     path('api/get_performance_generale/', directeur_agence_views.get_performance_generale, name="getperformancegenerale"),
     path('directeuragence/performanceemploye/', directeur_agence_views.performance_employes, name='performanceemployes'),
     path('directeuragence/gestionemployes/', directeur_agence_views.gestion_employes, name='gestionemployes'),
-    path('api/get_performance_employes/', directeur_agence_views.get_performance_employes, name="getperformanceemployes"),
-    path('directeuragence/listerendezvous/', directeur_agence_views.liste_rendez_vous, name='listerendezvous'),
+    path('api/get_statut_demande/', directeur_agence_views.get_performance_employes, name="getperformanceemployes"),
+    path('directeuragence/listeattente/',directeur_agence_views.liste_attente, name='listeattente'),
+    path('directeuragence/creer-rendezvous/', directeur_agence_views.creer_rendezvous, name='creer_rendezvous_finalisation'),
+    path('directeuragence/calendrier_finalisation', directeur_agence_views.calendrier_finalisation, name='calendrierfinalisation'),
+    path('directeuragence/resumedemande/<int:demande_id>/', directeur_agence_views.resumedemande, name='resumedemande'),
+    path('directeuragence/previewcontrat/<int:demande_id>/', directeur_agence_views.preview_contract, name='preview_contract'),
+    path('directeuragence/demande/<int:demande_id>/generate-contract/', directeur_agence_views.generate_contract_pdf, name='generate_contract'),
+    path('directeuragence/pdf-download-complete/', directeur_agence_views.pdf_download_complete, name='pdf_download_complete'),
+    path('api/finalisation/', directeur_agence_views.api_finalisation, name='api_finalisation'),
     #analyste_demande
     path('analyste/', analyste_demande_views.analyste_home, name='analyste_home'),
     path('analyste/detailsscoringdemande/<int:demande_id>/', analyste_demande_views.details_demande, name='detailsscoringdemande'),
     path("feature-importance", analyste_demande_views.feature_importance_page, name="feature_importance_page"),
     path("get-feature-importances", analyste_demande_views.get_feature_importances, name="get_feature_importances"),
     path("update-feature-importances", analyste_demande_views.update_feature_importances, name="update_feature_importances"),
+    path("analyste/refusdemande/<int:demande_id>/", analyste_demande_views.refus_demande, name="refus_demande"),
+    path("analyste/transmettredemande/<int:demande_id>/", analyste_demande_views.transmettre_demande, name="transmettre_demande"),
     #agent_inspection
     path('agentinspection/', agent_inspection_views.agent_inspection_home, name='agent_inspection_home'),
     path('agentinspection/calendrier_inspection', agent_inspection_views.calendrier_inspections, name='calendrierinspection'),

@@ -1,414 +1,517 @@
-.details-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-auto-rows: minmax(150px, auto);
-    gap: 20px;
-    grid-template-areas: "header  header  header" "client  client  client" "fam     pro     fin" "cap     insp    ponc" "actions actions actions";
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    padding: 20px;
-    min-height: 100vh;
-    box-sizing: border-box;
-    max-width: 1200px;
-    margin: 0 auto;
-    background-color: #e3e4e6;
-}
-
-.details-container>h1 {
-    grid-area: header;
-    margin: 0 0 20px 0;
-    color: #000000;
-    /* Noir pour meilleur contraste */
-    text-align: center;
-    font-size: 28px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #9d9ea0;
-    /* Gris pour la bordure */
-}
-
-.clientcredit {
-    grid-area: client;
-    background-color: #ffffff;
-    /* Blanc pour le contraste */
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: row;
-    gap: 30px;
-    justify-content: space-between;
-    border: 1px solid #9d9ea0;
-    /* Bordure grise */
-}
-
-.score-card {
-    position: relative;
-    z-index: 1;
-    background-color: #ffffff;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    box-sizing: border-box;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 1px solid #9d9ea0;
-    /* Bordure grise */
-}
-
-.score-tooltip {
-    position: absolute;
-    top: calc(100% - 10px);
-    left: -1px;
-    width: calc(100% + 2px);
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    background-color: #ffffff;
-    padding: 15px;
-    border-radius: 0 0 8px 8px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    border: 1px solid #9d9ea0;
-    border-top: none;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-    transform: translateY(-10px);
-    z-index: 20;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-}
-
-.score-tooltip h3 {
-    color: #e50005;
-    font-size: 16px;
-    margin-bottom: 10px;
-    border-bottom: 1px solid #e3e4e6;
-    padding-bottom: 5px;
-}
-
-.score-tooltip ul {
-    margin: 0;
-    padding-left: 20px;
-}
-
-.score-tooltip li {
-    margin-bottom: 5px;
-    font-size: 14px;
-    color: #2c3e50;
-}
-
-.score-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(229, 0, 5, 0.2);
-}
-
-.score-card:hover .score-tooltip {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-}
-
-.score-card h2 {
-    color: #000000;
-    font-size: 18px;
-    margin: 0 0 15px 0;
-    text-align: center;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #9d9ea0;
-    /* Gris pour la séparation */
-}
-
-.score-value {
-    font-size: 32px;
-    font-weight: bold;
-    margin: 10px 0;
-    color: #e50005;
-    /* Rouge pour les scores */
-    text-align: center;
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.score-bar-container {
-    width: 100%;
-    margin: 15px 0;
-}
-
-.score-bar {
-    width: 100%;
-    height: 15px;
-    background-color: #e3e4e6;
-    /* Gris clair pour le fond de barre */
-    border-radius: 8px;
-    overflow: hidden;
-    position: relative;
-}
-
-.bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #e50005, #9d9ea0);
-    /* Dégradé rouge à gris */
-    border-radius: 8px;
-    transition: width 0.8s ease;
-}
-
-
-/* Couleurs spécifiques pour les badges */
-
-.badge.excellent {
-    background-color: #e50005;
-    /* Rouge */
-    color: white;
-}
-
-.badge.bon {
-    background-color: #9d9ea0;
-    /* Gris */
-    color: white;
-}
-
-.badge.moyen {
-    background-color: #9d9ea0;
-    /* Gris */
-    color: white;
-    opacity: 0.8;
-}
-
-.badge.faible {
-    background-color: #9d9ea0;
-    /* Gris */
-    color: white;
-    opacity: 0.6;
-}
-
-
-/* Table styles */
-
-.clientcredit .details-table {
-    width: 48%;
-    border-collapse: collapse;
-}
-
-.clientcredit .details-table th,
-.clientcredit .details-table td {
-    padding: 10px;
-    text-align: left;
-    border-bottom: 1px solid #9d9ea0;
-    /* Gris pour les bordures */
-}
-
-.clientcredit .details-table th {
-    background-color: #e3e4e6;
-    /* Gris clair pour l'en-tête */
-    color: #000000;
-    width: 40%;
-}
-
-
-/* Ponctualité card specific */
-
-.ponctualite table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-    flex-grow: 1;
-}
-
-.ponctualite td {
-    padding: 8px 5px;
-    border-bottom: 1px solid #9d9ea0;
-    /* Gris pour les bordures */
-    font-size: 14px;
-}
-
-.ponctualite td:first-child {
-    font-weight: 600;
-    color: #000000;
-}
-
-
-/* Score text specific */
-
-.score-text {
-    font-size: 24px;
-    font-weight: bold;
-    color: #e50005;
-    /* Rouge pour le texte de score */
-    text-align: center;
-    margin: auto 0;
-    padding: 10px;
-    width: 100%;
-}
-
-.score-missing {
-    color: #9d9ea0;
-    /* Gris pour le texte manquant */
-    font-style: italic;
-    margin: 10px 0;
-    text-align: center;
-}
-
-
-/* Responsive adjustments */
-
-@media (max-width: 900px) {
     .details-container {
-        grid-template-columns: 1fr;
-        grid-template-areas: "header" "client" "fam" "pro" "fin" "cap" "insp" "ponc";
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-auto-rows: minmax(150px, auto);
+        gap: 20px;
+        grid-template-areas: "header  header  header" "client  client  client" "fam     pro     fin" "cap     insp    ponc" "global  global  global" "actions actions actions";
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        padding: 20px;
+        min-height: 100vh;
+        box-sizing: border-box;
+        max-width: 1200px;
+        margin: 0 auto;
+        background-color: #e3e4e6;
     }
+    
+    .details-container>h1 {
+        grid-area: header;
+        margin: 0 0 20px 0;
+        color: #000000;
+        text-align: center;
+        font-size: 28px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #9d9ea0;
+    }
+    
     .clientcredit {
+        grid-area: client;
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: row;
+        gap: 30px;
+        justify-content: space-between;
+        border: 1px solid #9d9ea0;
+    }
+    
+    .score-card {
+        position: relative;
+        background-color: #ffffff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        display: flex;
         flex-direction: column;
-        gap: 15px;
+        height: 100%;
+        min-height: 200px;
+        box-sizing: border-box;
+        transition: all 0.3s ease;
+        border: 1px solid #9d9ea0;
+        z-index: 1;
     }
-    .clientcredit .details-table {
-        width: 100%;
-    }
-}
-
-.action-buttons {
-    grid-area: actions;
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-top: 20px;
-    padding: 15px;
-    background-color: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    border: 1px solid #9d9ea0;
-}
-
-.btn {
-    padding: 10px 20px;
-    font-size: 14px;
-    min-width: 180px;
-    text-align: center;
-}
-
-.btn-primary {
-    background-color: #9d9ea0;
-    /* Gris */
-    color: white;
-}
-
-.btn-primary:hover {
-    background-color: #7d7e80;
-}
-
-.btn-danger {
-    background-color: #e50005;
-    /* Rouge */
-    color: white;
-}
-
-.btn-danger:hover {
-    background-color: #c40004;
-}
-
-.btn-submit {
-    background-color: #9d9ea0;
-    color: white;
-    width: 100%;
-    padding: 12px;
-    margin-top: 15px;
-}
-
-
-/* Modals */
-
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-.modal-content {
-    background-color: #e3e4e6;
-    margin: 5% auto;
-    padding: 25px;
-    border-radius: 10px;
-    width: 50%;
-    max-width: 500px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    position: relative;
-}
-
-.close {
-    color: #e50005;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-    position: absolute;
-    right: 20px;
-    top: 10px;
-}
-
-.close:hover {
-    color: #c40004;
-}
-
-
-/* Formulaires */
-
-.form-group {
-    margin-bottom: 20px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
-    color: #2c3e50;
-}
-
-.form-group input[type="text"],
-.form-group input[type="datetime-local"],
-.form-group select,
-.form-group textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #9d9ea0;
-    border-radius: 5px;
-    background-color: white;
-}
-
-.form-group textarea {
-    min-height: 100px;
-    resize: vertical;
-}
-
-@media (max-width: 900px) {
-    .details-container {
-        grid-template-areas: "header" "client" "fam" "pro" "fin" "cap" "insp" "ponc" "actions";
-    }
-    .action-buttons {
-        flex-direction: column;
-        align-items: center;
-        gap: 15px;
-        padding: 15px;
-    }
-    .btn {
-        width: 100%;
-    }
+    
     .score-tooltip {
-        position: static;
+        position: absolute;
+        top: calc(100% + 10px);
+        left: 0;
+        right: 0;
+        width: 90%;
+        max-height: 0;
+        overflow: hidden;
+        background-color: #ffffff;
+        margin: 0 auto;
+        padding: 0;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        border: 1px solid #e3e4e6;
+        opacity: 0;
+        transition: all 0.3s ease;
+        z-index: 100;
+        box-sizing: border-box;
+    }
+    
+    .score-card:hover .score-tooltip {
+        opacity: 1;
+        max-height: 400px;
+        /* Hauteur augmentée */
+        padding: 20px;
+    }
+    
+    .score-tooltip::before {
         display: none;
+    }
+    
+    .score-tooltip-content {
+        padding: 5px 0;
+        width: 100%;
+    }
+    
+    .score-tooltip h3 {
+        color: #e50005;
+        font-size: 16px;
+        margin: 0 0 15px 0;
+        padding-bottom: 10px;
+        border-bottom: 1px dashed #e3e4e6;
+    }
+    
+    .score-tooltip ul {
+        margin: 0;
+        padding-left: 20px;
+        list-style-type: none;
+    }
+    
+    .score-tooltip li {
+        margin-bottom: 8px;
+        font-size: 14px;
+        color: #2c3e50;
+        position: relative;
+    }
+    
+    .score-tooltip li::before {
+        content: "→";
+        color: #e50005;
+        position: absolute;
+        left: -20px;
+    }
+    
+    .score-card:hover .score-tooltip {
         opacity: 1;
         visibility: visible;
-        transform: none;
+        transform: translateY(0) scale(1);
+    }
+    /* Amélioration de l'ombre au survol */
+    
+    .score-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 20px rgba(229, 0, 5, 0.25), 0 2px 5px rgba(0, 0, 0, 0.1);
+        z-index: 100;
+    }
+    
+    .score-tooltip h3 {
+        color: #e50005;
+        font-size: 16px;
+        margin-bottom: 10px;
+        border-bottom: 1px solid #e3e4e6;
+        padding-bottom: 5px;
+    }
+    
+    .score-tooltip ul {
+        margin: 0;
+        padding-left: 20px;
+    }
+    
+    .score-tooltip li {
+        margin-bottom: 5px;
+        font-size: 14px;
+        color: #2c3e50;
+    }
+    
+    .score-card:hover .score-tooltip {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+    
+    .score-card h2 {
+        color: #000000;
+        font-size: 18px;
+        margin: 0 0 15px 0;
+        text-align: center;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #9d9ea0;
+    }
+    
+    .score-value {
+        font-size: 32px;
+        font-weight: bold;
+        margin: 10px 0;
+        color: #e50005;
+        text-align: center;
+        flex-grow: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .score-bar-container {
+        width: 100%;
+        margin: 15px 0;
+    }
+    
+    .score-bar {
+        width: 100%;
+        height: 15px;
+        background-color: #e3e4e6;
+        border-radius: 8px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .score-global {
+        grid-area: global;
+        /* Conserve les mêmes styles que les autres cartes */
+        background-color: #ffffff;
+        color: #000000;
+        /* Texte noir comme les autres */
+    }
+    
+    .score-global h2 {
+        color: #000000;
+        /* Noir comme les autres titres */
+        border-bottom: 1px solid #9d9ea0;
+        /* Gris comme les autres */
+    }
+    
+    .score-global .score-value {
+        color: #e50005;
+        /* Rouge comme les autres valeurs */
+    }
+    
+    .score-global .score-bar {
+        background-color: #e3e4e6;
+        /* Gris clair comme les autres */
+    }
+    
+    .score-global .bar-fill {
+        background: #e50005;
+        /* Dégradé rouge/gris comme les autres */
+    }
+    
+    .score-interpretation {
         margin-top: 15px;
+        text-align: center;
+        padding: 10px;
+        background-color: rgba(229, 0, 5, 0.05);
+        /* Fond très légèrement rougeâtre */
+        border-radius: 5px;
+        border: 1px solid #e3e4e6;
     }
-    .score-card:hover .score-tooltip,
-    .score-card.active .score-tooltip {
+    /* Styles des badges - mêmes couleurs que définies précédemment */
+    
+    .score-interpretation .badge.excellent {
+        background-color: #e50005;
+        color: white;
+    }
+    
+    .score-interpretation .badge.bon {
+        background-color: #9d9ea0;
+        color: white;
+    }
+    
+    .score-interpretation .badge.moyen {
+        background-color: #9d9ea0;
+        color: white;
+        opacity: 0.8;
+    }
+    
+    .score-interpretation .badge.faible {
+        background-color: #9d9ea0;
+        color: white;
+        opacity: 0.6;
+    }
+    
+    .bar-fill {
+        height: 100%;
+        background: #e50005;
+        border-radius: 8px;
+        transition: width 0.8s ease;
+    }
+    
+    .clientcredit .details-table {
+        width: 48%;
+        border-collapse: collapse;
+    }
+    
+    .clientcredit .details-table th,
+    .clientcredit .details-table td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #9d9ea0;
+    }
+    
+    .clientcredit .details-table th {
+        background-color: #e3e4e6;
+        color: #000000;
+        width: 40%;
+    }
+    /* Ponctualité card specific */
+    
+    .ponctualite table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        flex-grow: 1;
+    }
+    
+    .ponctualite td {
+        padding: 8px 5px;
+        border-bottom: 1px solid #9d9ea0;
+        font-size: 14px;
+    }
+    
+    .ponctualite td:first-child {
+        font-weight: 600;
+        color: #000000;
+    }
+    /* Score text specific */
+    
+    .score-text {
+        font-size: 24px;
+        font-weight: bold;
+        color: #e50005;
+        text-align: center;
+        margin: auto 0;
+        padding: 10px;
+        width: 100%;
+    }
+    
+    .score-missing {
+        color: #9d9ea0;
+        font-style: italic;
+        margin: 10px 0;
+        text-align: center;
+    }
+    /* Action buttons */
+    /* Action buttons - Version réduite */
+    
+    .action-buttons {
+        grid-area: actions;
+        display: flex;
+        justify-content: center;
+        gap: 125px;
+        /* Espacement réduit */
+        margin-top: 20px;
+        padding: 25px 15px;
+        /* Padding réduit */
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        border: 1px solid #9d9ea0;
+    }
+    
+    .btn {
+        padding: 8px 16px;
+        /* Taille réduite (était 10px 20px) */
+        font-size: 13px;
+        /* Taille de police légèrement réduite */
+        max-width: 160px;
+        min-width: 140px;
+        max-height: 75px;
+        /* Largeur minimale réduite (était 180px) */
+        text-align: center;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        /* Transition sur toutes les propriétés */
+    }
+    /* Conservez le reste des styles existants pour les boutons */
+    
+    .btn-primary {
+        background-color: #9d9ea0;
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background-color: #7d7e80;
+        transform: translateY(-1px);
+        /* Effet de hover plus subtil */
+    }
+    
+    .btn-danger {
+        background-color: #e50005;
+        color: white;
+    }
+    
+    .btn-danger:hover {
+        background-color: #c40004;
+        transform: translateY(-1px);
+    }
+    
+    .btn-submit {
+        background-color: #9d9ea0;
+        color: white;
+        width: 100%;
+        padding: 10px;
+        /* Réduit (était 12px) */
+        margin-top: 12px;
+        /* Réduit (était 15px) */
+    }
+    /* Modals */
+    
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+    
+    .modal-content {
+        background-color: #e3e4e6;
+        margin: 5% auto;
+        padding: 25px;
+        border-radius: 10px;
+        width: 50%;
+        max-width: 500px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        /* Centre horizontalement */
+        max-width: 500px;
+        /* Largeur maximale raisonnable */
+        width: 90%;
+    }
+    
+    .modal-content textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #9d9ea0;
+        border-radius: 5px;
+        min-height: 120px;
+        resize: vertical;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .modal-content h2 {
+        margin-bottom: 20px;
+        color: #e50005;
+    }
+    
+    .close {
+        color: #e50005;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        position: absolute;
+        right: 20px;
+        top: 10px;
+    }
+    
+    .close:hover {
+        color: #c40004;
+    }
+    /* Formulaires */
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
         display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #2c3e50;
     }
-}
+    
+    .form-group input[type="text"],
+    .form-group input[type="datetime-local"],
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #9d9ea0;
+        border-radius: 5px;
+        background-color: white;
+    }
+    
+    .form-group textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+    
+    .modal-content textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #9d9ea0;
+        border-radius: 5px;
+        min-height: 120px;
+        resize: vertical;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .modal-content h2 {
+        margin-bottom: 20px;
+        color: #e50005;
+    }
+    /* Style pour le lien du bouton rendez-vous */
+    
+    .action-buttons a.btn {
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+    
+    @media (max-width: 900px) {
+        .details-container {
+            grid-template-columns: 1fr;
+            grid-template-areas: "header" "client" "fam" "pro" "fin" "cap" "insp" "ponc" "actions";
+        }
+        .clientcredit {
+            flex-direction: column;
+            gap: 15px;
+        }
+        .clientcredit .details-table {
+            width: 100%;
+        }
+        .action-buttons {
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+        }
+        .btn {
+            width: 100%;
+        }
+        .modal-content {
+            width: 90%;
+        }
+    }
